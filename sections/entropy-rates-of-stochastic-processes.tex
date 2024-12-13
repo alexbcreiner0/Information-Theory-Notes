@@ -1,0 +1,148 @@
+\section{Entropy Rates of Stochastic Processes}
+\subsection{Stochastic Processes}
+A \textbf{stochastic process} $\{X_i\}_{i \in I}$ is an indexed sequence of random variables. (Typically $I$ is either the natural numbers or the positive reals, i.e. time elapsing. We will assume that $I$ is the naturals in this section.) We will assume that all $X_i$ in such a process share an alphabet $\mathcal{X}$. The process is characterized by the join probability mass functions $p(x_1,x_2,\ldots,x_n)$. A stochastic process is \textbf{stationary} if shifting the index on all variables in an initial segment simultaneously doesn't change anything. More formally, we mean that for all $n,l \in \omega$:
+\begin{align}
+	P(X_1 = x_1,X_2 = x_2,\ldots,X_n = x_n) = P(X_1 = x_{1+l},X_2 = x_{2+l},\ldots,X_n = x_{n+l})
+\end{align} 
+A special and simple case of a stochastic process is the \textbf{Markov chain} we discussed earlier. To extend it past three variables, a Markov chain (or a Markov process) is a stochastic process in which each random variable in the sequence is independent of all others except the one immediately preceding it. That is to say
+\begin{align}
+	P(X_{n+1} = x_{n+1}|X_n = x_n,X_{n-1}=x_{n-1},\ldots,X_1 = x_1) = P(X_{n+1}=x_{n+1}|X_n = x_n)
+\end{align}
+A Markov process is \textbf{time invariant} if the conditional probability $p(x_{n+1}|x_n)$ does not depend on $n$. That is, for $n=1,2,\ldots$ and $a,b\in \mathcal{X}$, we have
+\[ P(X_{n+1}=b|X_n=a) = P(X_2=b|X_1=a) \]
+If $\{X_i\}$ is a Markov chain, then $X_n$ is called the \textbf{state} at time $n$. A time invariant Markov chain is characterized by an initial state and a \textbf{probability transition matrix}
+\[ P = \begin{pmatrix} p_{11} & p_{12} & \ldots & p_{1m} \\
+						p_{21} & p_{22} & \ldots & p_{2m} \\
+						\vdots \\
+						p_{m1} & p_{m2} & \ldots & p_{mm} \end{pmatrix} \]
+where $p_{ij}$ is the probability of entering state $j$ given the current state is $i$, and $1,2,\ldots,m$ index the possible symbols of the alphabet $\mathcal{X}$. A Markov chain is said to be \textbf{irreducible} if it there is always a nonzero probability of going from any state to any other state in a finite number of steps. It is possible for certain states of a Markov chain to eventually return back to themselves after a certain number of steps. Say that a state $i$ has \textbf{period} $k$ if any such loop can only occur in a number of steps which is a multiple of $k$. Otherwise it is \textbf{aperiodic}. A Markov chain itself is referred to as periodic or aperiodic if all of it's states have that property. \par 
+By the law of total probability, we have the following distribution on the states at time $n$:
+\[ p(X_{n+1} = j) = \sum_{i=1}^n P(X_n = i)P(X_{n+1}=j|X_n = i) = \sum_{i=1}^n P(X_n=i)p_{ij} \]
+Call a distribution on the states a \textbf{stationary distribution} if $p(X_{n+2}=j) = P(X_{n+1}=1)$, and so on. Clearly not all Markov processes are stationary, and we need to be a bit careful. First of all, we should be clear that one transition matrix defines \emph{multiple} Markov processes, one for every different initial state and indeed every initial probability distribution. One transition matrix for a Markov chain could easily have \emph{multiple} stationary distributions. It will be shown that the distribution of $X_n$ always \textit{tends towards} a stationary distribution as $n \to \infty$ when there is one. It can be shown that when a finite-state Markov process is aperiodic and irreducible, then it has a unique stationary distribution. Finally, if the initial probability distribution of a system is this stationary distribution, then the distribution of states will always be the same from that point on. As a result, the initial state of a stationary Markov process is drawn according to a stationary distribution, then the entropy will be constant:
+\[ H(X_1) = H(X_2) = \ldots \] 
+An example will be helpful. Consider the two-state Markov chain given by the transition matrix
+\[ P = \begin{pmatrix} p_{11} & p_{12} \\ p_{21} & p_{22} \end{pmatrix} =  \begin{pmatrix} 1-\alpha & \alpha \\
+						\beta & 1-\beta \end{pmatrix} \]  
+	where $\alpha,\beta \in (0,1)$. Note that the rows of this matrix must sum to one; this is a general property of transition matrices. Suppose our initial state is $X_1 = 1$. It is a bit silly, but we can say that there is an initial probability distribution of $p(x_1)$ where $P(X_1 = 1) = 1$ and $P(X_1 = 2) = 0$, which we can represent with the vector
+\[ \vec{x}_1 = \begin{pmatrix} x_1^1 \\ x_1^2 \end{pmatrix} = \begin{pmatrix} 1 \\ 0 \end{pmatrix} \]
+What is the probability distribution $p(x_2)$? Clearly it is the vector
+\[ \vec{x}_2 = \begin{pmatrix} 1-\alpha \\ \alpha \end{pmatrix} \] 
+But note that the top entry is 
+\begin{align}
+	x_2^1 = P(X_2 = 1) &= P(X_2 = 1|X_1 = 1)P(X_1 = 1) + P(X_2 = 1|X_1 = 2)P(X_1 = 2) \\
+			&= p_{11}x_1^1 + p_{12}x_1^2
+\end{align} 
+which is the top entry of $P\vec{x}_1$. Thus in general we have 
+\[ P\vec{x}_{n+1} = P\vec{x}_n \]
+Suppose this matrix had a stationary distribution. Call it $\vec{\mu}$. By definition then, we have that $P\vec{\mu} = \vec{\mu}$, i.e. $\vec{\mu}$ is an eigenvector of the transition matrix with eigenvalue $1$. Such a $\mu$ does exist, and can be easily solved for to find 
+\[  \mu_1 = \frac{\beta}{\alpha + \beta} \hspace{2cm} \mu_2 = \frac{\alpha}{\alpha+\beta} \]
+\begin{definition}
+	The \textbf{entropy rate} of a stochastic process $\{X_i\}$ is defined by 
+	\begin{align}
+		H(\mathcal{X}) &= \lim_{n\to \infty} \frac{1}{n}H(X_1,X_2,\ldots,X_n) \\
+					&= \lim_{n\to \infty} \frac{1}{n}\left[ H(X_1) + H(X_2|X_1) + \ldots + H(X_n|X_1,X_2,\ldots,X_{n-1}) \right]
+	\end{align}
+	Note that this limit is not guaranteed to exist. Entropy rate is only defined when the limit exists. 
+\end{definition}
+Some examples are in order. Consider a typewriter producing a sequence one characters over some alphabet $\mathcal{X}$ where $|\mathcal{X}| = m$, all equally likely. After producing $n$ many characters we have a possibility space of $m^n$ possible sequences, all still equally likely, and so the joint entropy $H(X_1,X_2,\ldots,X_n)$ is $\log(m^n) = n\log(m)$. We see then that the entropy rate is just $\log(m)$. What sense is there to make of this? The $X_i$'s in this case are independent and identically distributed. As such, our uncertainty over what comes next shouldn't be increasing or decreasing at all regardless of how long the sequence gets. That is exactly what we see here. More generally, if the $X_i$ of a stochastic process are independent and identically distributed, then they all individually have entropy $H(X_1)$. Then the entropy rate of the process is 
+\[ H(\mathcal{X})  = \lim_{n \to \infty}\frac{1}{n}H(X_1,X_2,\ldots,X_n) = H(X_1) \]
+which is simply the same intuitive result as the typewriter example but expressed more generally. On the other hand consider a sequence of independent random variables which are \emph{not} identically distributed. One can hopefully see that the entropy rate of such a process is $\lim_{n \to \infty} \frac{1}{n}\sum H(X_i)$. We can glean a bit more intuition about entropy rates by considering how this limit might diverge. Intuition guides us here: we should be getting less and less certain as the process continues, and it needs to happen regardless of the particular sequence as it emerges due to our constraint of independence. Consider a sequence of Bernoulli random variables in which the probability of success $p_i$ changes depending on where in the sequence we are. In particular, consider a sequence of success probabilities which are initially $0$ (so that the corresponding $X_i$ have entropy $0$ independently of what else has happened so far), followed by being $\frac{1}{2}$ for some stretch of time (so that corresponding $X_i$ have entropy $1$), followed by being $0$ for a number of steps which $2$ to the power of the number of steps that it was previously $\frac{1}{2}$, followed by being $\frac{1}{2}$ for an exponentially longer number of steps, and so on. This limit will never converge because the sequence $\frac{1}{n}\sum H(X_i)$ seems to alternate between approaching $0$ and approaching $1$. \par 
+Another possible candidate to define the entropy rate of a process is the following:
+\begin{align}
+	H'(\mathcal{X}) = \lim_{n \to \infty} H(X_n|X_1,X_2,\ldots,X_{n-1}) 
+\end{align} 
+Thus the first definition of entropy rate $H(\mathcal{X})$ is the \emph{per-character} entropy of the \emph{total sequence} of random variables, while the second definition is the limiting conditional entropy of the next symbol given what the process has produced up to this point. A small point of subtlety about this definition: it might seem to be a nonincreasing function since by the intuition that conditioning reduces entropy, but in fact this requires the sequence to be stationary. For any stochastic process, we can drop terms that we are conditioning on to get bigger numbers:
+\[ H(X_{n+1}|X_1,X_2,\ldots,X_n) \leq H(X_{n+1}|X_2,X_3,\ldots,X_n) \]
+But then we need that the process is stationary in order to subtract $1$ from all of the variables at once and get what we actually want:
+\begin{align}
+	H(X_{n+1}|X_1,X_2,\ldots,X_n) &\leq H(X_{n+1}|X_2,X_3,\ldots,X_n) \\
+								&= H(X_n|X_1,X_2,\ldots,X_n)
+\end{align}
+From which it follows that this sequence of conditional entropies is nonincreasing. This is important because it means that the limit $H'(\mathcal{X})$ is guaranteed to exist by the monotonic convergence theorem. Moreover it turns out that for stationary stochastic processes, these definitions coincide, providing a condition for the entropy rate to be well defined under our original definition. We need the following lemma:
+\begin{lemma}[Cesaro mean]
+	If $a_n \to a$ and $b_n \to \frac{1}{n}\sum_{i=1}^n a_i$, then $b_n \to a$. 
+\end{lemma}
+\begin{theorem}
+	For a stationary stochastic process, $H(\mathcal{X}) = H'(\mathcal{X})$. 
+\end{theorem}
+\begin{proof}
+	By the chain rule for entropy we have that 
+	\begin{align}
+		H(\mathcal{X}) = \frac{H(X_1,X_2,\ldots,X_n)}{n} &= \frac{1}{n}\sum_{i=1}^n H(X_i|X_1,\ldots,X_{i-1}) \\
+		&\to \frac{1}{n}\sum_{i=1}^n H'(\mathcal{X}) = H'(\mathcal{X})
+	\end{align}
+where the final equality follows from the lemma. 
+\end{proof}
+Note that by the alternative definition, the entropy rate for a stationary Markov chain is 
+\begin{align}
+	H(\mathcal{X}) = \lim_{n \to \infty} H(X_n|X_1,\ldots,X_{n-1}) &= \lim_{n \to \infty} H(X_n|X_{n-1}) \\ &= H(X_2|X_1)
+\end{align}
+which is very simple. 
+\subsection{The Second Law of Thermodynamics}
+	In statistical thermodynamics, entropy is often defined as the log of the number of microstates in the system. When all states are equally likely this is exactly entropy for the physical system (seeing that system as an abstract source of information) as we've defined it. The second law is the statement that the entropy of a closed physical system can only increase. (Physical entropy is a \emph{special case} of information entropy.  \par 
+	To understand this law from our own perspective we can model the isolated system as a Markov process whose transitions obey the physical laws governing the system. Why a Markov chain? The reason is that physicists presume that the future state of a system is entirely dependent on the present state of the system, and so whatever past states led the system to that present state are irrelevant towards predicting the future. That is exactly what a Markov process assumes. For the sake of simplicity (so as to not have to define differential entropy yet), we assume this process has finitely many possible states. Then it has the transition matrix
+	\[ P = \begin{pmatrix} r_{11} & r_{12} & \ldots & r_{1m} \\
+							r_{21} & r_{22} & \ldots & r_{2m} \\
+							\vdots \\ r_{m1} & r_{m2} & \ldots & r_{mm} \end{pmatrix} \]
+where $r_{ij}$ is the probability that the system enters state $j$ given that it is in state $i$, and $|\mathcal{X}| = m$. Consider two different `initial' distributions for the system, labelled $\vec{\mu}_0$ and $\vec{\sigma}_0$ respectively. (So the $i^{th}$ entry of $\vec{\mu}_0$, $\mu_0^i$, is the initial probability of entering state $i$, and so on.) According to the laws of physics, the distributions at the next moment will be $\vec{\mu}_1 = P\vec{\mu}_0$ and $\vec{\sigma}_1 = P\vec{\sigma}_0$. More importantly, we can think about the \emph{joint} probability mass functions for the system at the two different moments (seeing it as an evolving process, i.e. a stream of information over time). Call the joint pmf's for the system under the two initial conditions $p(x_1,x_2)$ and $q(x_1,x_2)$ respectively. So 
+\[ p(i,j) = P(X_1 = i, X_2 = j) = P(X_1 = i)P(X_2 = j|X_1 = i) = \mu_0^ir_{ij} \]
+and similarly $q(i,j) = \sigma_0^ir_{ij}$. Consider the \emph{relative entropy} between these two joint probability mass functions: $D(p(x_1,x_2)||q(x_1,x_2))$. Specifically, we are interested in comparing this with the relative entropy between the initial distributions: $D(p(x_1)||q(x_1))$. The chain rule for relative entropy allows us to easily make this comparison:
+\begin{align}
+	D(p(x_1,x_2)||q(x_1,x_2)) = D(p(x_1)||q(x_1)) + D(p(x_2|x_1)||q(x_2|x_1))	
+\end{align}
+Note however the second term, and recall that we are dealing with a Markov chain. These conditional probabilities are the same! Thus $D(p(x_2|x_2)||q(x_2|x_1)) = 0$. The chain rule can be used with privilege to $x_2$ instead of $x_1$ to produce a second identity:
+\begin{align}
+	D(p(x_1,x_2)||q(x_1,x_2)) = D(p(x_2)||q(x_2)) + D(p(x_1|x_2)||q(x_1|x_2))	
+\end{align}
+Unlike in the first identity, Markovity implies nothing about $D(p(x_1|x_2)||q(x_1|x_2))$. We do however know that it is non-negative. Combining the two right sides therefore gives  
+\begin{align}
+	D(p(x_1)||q(x_1)) = D(p(x_2)||q(x_2))+D(p(x_1|x_2)||q(x_1|x_2)) \geq D(p(x_2)||q(x_2))
+\end{align}
+We are finally left with 
+\begin{align}
+	D(p(x_1)||q(x_1)) \geq D(p(x_2)||q(x_2))
+\end{align}
+Or to abuse the notation just a bit:
+\begin{align}
+	D(\vec{\mu}_0||\vec{\sigma}_0) \geq D(\vec{\mu}_1||\vec{\sigma}_1)
+\end{align}
+The same logic would apply to show that $D(p(x_2)||q(x_2)) \geq D(p(x_3)||q(x_3))$, and that $D(p(x_3)||q(x_3)) \geq D(p(x_4)||q(x_4))$. We have thus shown that the relative entropy between the distributions $p$ and $q$ is non-increasing. The error in assuming that the distribution is $q$ when in fact it is really $p$ can only get smaller. This feels to me very akin to the observation that Stafford Beer makes in chapter 2 of Brain of the Firm in which feedback tends to dominate and render the initial input to a control system irrelevant. Start two of the same system off in two different states. The distinction between them will generally tend to matter less and less over time. \par 
+Next, we bring in stationary states. Suppose that our Markov process is stationary, and let $\vec{\lambda}$ be a (the?) stationary distribution. If we substitute $\vec{\lambda}$ for $\vec{\sigma}_0$ in the previous case, then since it is stationary it follows that $\vec{\sigma}_1 = P\vec{\lambda} = \vec{\lambda}$. Thus we obtain the identity
+\begin{align}
+	D(\vec{\mu}_0||\vec{\lambda}) \geq D(\vec{\mu}_1||\vec{\lambda})
+\end{align}
+In other words, any initial state will tend to approach indistinguishability with the stationary distribution over time as the Markov process plays out. In fact, it can be shown that this sequence of relative entropies approaches $0$ in all cases. \par 
+Having relative entropy decreasing isn't quite the same as having actual entropy increase. What it means is that it really depends on what the stationary distribution of the physical system is. Suppose that the stationary distribution of the Markov process is non-uniform, and start with a uniform distribution as the initial condition. Then the above results show that we will approach a non-uniform distribution over time \emph{from} a uniform distribution, implying an overall entropy which is \emph{decreasing}! If however the stationary distribution is uniform $u(x)$, and we start from a non-uniform distribution $p_n(x)$, then it follows that
+\begin{align}
+	D(p_n(x)||u(x)) = \sum_x p(x)\log\left( \frac{p_n(x)}{u(x)} \right) &= \log(\mathcal{X}) - H(X_n) \overset{n}{\to} 0 \\ \implies \lim_{n \to \infty} H(X_n) = \log(\mathcal{X})
+\end{align}
+We know that $\log(\mathcal{X})$ is the maximum entropy of the system. Therefore the entropy must increase over time. One final note can be made of this theory and it's relation to thermodynamic entropy, by considering conditional entropies.  
+\begin{definition}
+	A probability transition matrix $P$ is called \textbf{doubly stochastic} if not only all of it's rows sum to one, but also all of it's columns. 
+\end{definition}
+\begin{theorem}
+	The uniform distribution is a stationary distribution of $P$ iff the probability transition matrix is doubly stochastic. 
+\end{theorem}
+\begin{proof}
+	todo
+\end{proof}
+We know already that the conditional entropy $H(X_n|X_1,X_2,\ldots,X_{n-1})$ for a stationary Markov process is non-increasing. What, however, can be said about $H(X_n|X_1)$? Using the fact that additional conditioning reduces entropy, the definition of a Markov process, and the definition of a stationary process (in that order), we have that
+\begin{align}
+	H(X_n|X_1) &\geq H(X_n|X_1,X_2) \\
+				&= H(X_n|X_2) \\
+				&= H(X_{n-1}|X_1)
+\end{align}
+Thus our conditional uncertainty of the future increases over time. The farther out in time we go, the less certain we are, if we only know the initial condition. The same result can be obtained through the data-processing inequality. Note that the $X_1 \to X_{n-1} \to X_n$ form a Markov chain in the sense described in section $1$. By the data-processing inequality then we have 
+\begin{align}
+	I(X_1;X_{n-1}) \geq I(X_1;X_n)
+\end{align}
+Expanding the mutual informations in terms of entropies we have then
+\begin{align}
+	H(X_{n-1}) - H(X_{n-1}|X_1) \geq H(X_n) - H(X_n|X_1)
+\end{align}
+Since we are dealing with a stationary Markov process, we are assuming that the initial probability distribution was the stationary distribution, and so $H(X_n)$ itself is constant. In particular $H(X_{n-1}) = H(X_n)$, and so we can cancel these out in the above inequality. Doing so and then multiplying both sides by $-1$ and flipping the inequality around, we are left with
+\begin{align}
+	H(X_{n-1}|X_1) \leq H(X_n|X_1)
+\end{align} 
+Which is exactly what we just showed more directly above. 
+

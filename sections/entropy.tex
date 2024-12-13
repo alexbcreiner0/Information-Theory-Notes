@@ -1,0 +1,452 @@
+\section{Entropy}
+\subsection{Defining Entropy}
+\par Suppose we have an information source. This source produces \textbf{variety}; one out of many possible outcomes, with varying probabilities for each possibility. Each time the information source produces an outcome, we are receiving information. How could one measure the amount of information which the source produces per pulse of output? Clearly, the answer has to scale with the variety of the system, i.e. the number of possible outcomes. \textbf{The more possibilities there are, the more information can be produced per pulse}. This has a startling implication though - that to measure the rate of information transfer from a source is also to measure the amount of uncertainty that we have about what the outcome will be. \par 
+Simply counting the number of possible states is perfectly sufficient at measuring the uncertainty. That much is clear. But it should also be noted that any monotonic function of this number will also do. And there are a few big reasons why it makes more intuitive sense to use the logarithm of the number. Suppose we have two different information sources, which we are choosing to see as a single composite information source. Say the first source has $m$ many possible states, and the second has variety $n$ many. The number of possible states of this composite source is the product of the number of states, $mn$, and not the sum. However, if we take as our measure of uncertainty the \emph{logarithm} of the total number of states, then by properties of logarithms we \emph{can} simply add them together, since
+\[ \log(mn) = \log(m)+\log(m) \]
+We will see other reasons which further justify this choice later on. We will typically use base 2 logarithms, so that the variety of a system is measured in bits. If there are $16$ possible states of a system, then variety is $4$ bits. Later on we will see that this is because conceivably I could ask that many yes or no questions to completely pin down what the outcome was. Equivalently, I could represent that state using a $4$ bit string. \par 
+Things get trickier when some outcomes are likelier than others. For example, the letter $e$ appears way more often than any other in the English language. This should \emph{reduce} our uncertainty about the information produced, and therefore our measure should shrink. This establishes a principle: our measure of uncertainty should be maximal when all outcomes are equally likely. \par  Regardless of what we're talking about, the possible outcomes coming from the information source constitute what can be seen as the sample space of a probability experiment. For the sake of initial simplicity, we will assume a countable sample space. This sample space we will call an \textbf{alphabet}, and typically denote it $\mathcal{X}$. Random variables are typically seen as mappings from a sample space to a set of numbers. Since our sample spaces are countable, we can simply assume a bijection between the numbers and the outcomes themselves, and assume that a random variable ends up equaling the symbol of the alphabet directly. \par 
+With that said, let $X$ be a discrete random variable with alphabet $\mathcal{X}$ and probability mass function $p(x)=P(X = x)$, where $x \in \mathcal{X}$. 
+\begin{definition}
+	The \textbf{entropy} of the random variable $X$ (as fixed directly above), denoted $H(X)$, is defined by
+	\begin{align}
+		H(X) = -\sum_{x \in \mathcal{X}}p(x)\log(p(x))
+	\end{align}
+Where the logarithm here is base 2. We are using the convention here that $0\log(0) = 0$.  
+\end{definition}
+Immediately we see something quite odd about this definition, which is that the random variable $X$ is being fed \emph{back in} to it's own probability mass function. This means that entropy is only \emph{indirectly} a function of the random variable $X$. Really, it is a function of the probability distribution itself $p(X)$. \par 
+The first thing we should note is that things greatly simplify as we said they should when all outcomes are equally likely. Suppose they are: that all probabilities $p_i$ for the $x_i \in \mathcal{X}$ are the same, i.e. $\frac{1}{|\mathcal{X}|} = \frac{1}{n}$. Then 
+\begin{align*}
+	H(X) = -\sum_{i=1}^n \frac{1}{n}\log(\frac{1}{n}) &= -\frac{1}{n}\sum_{i=1}^n \log(1)-\log(n) \\
+		&= \frac{1}{n} \sum_{i=1}^n -\log(n) \\
+		&= \log(n)
+\end{align*}
+Thus at the very least this definition of entropy can be seen as an extension of our original measure of the amount of information per pulse of activity from an information source, i.e. the number of bits needed to encode the outcome. We will see later that the above definition is the only possible extension which maintains two other basic axioms about such a measure. \par 
+Note that the entropy $X$ can be seen as an expected value, in particular that of $\log(\frac{1}{p(X)})$. I.e.
+\begin{align}
+	H(X) = E\left(\log\left(\frac{1}{p(X)}\right)\right) = -E(\log(p(X))
+\end{align}
+\begin{lemma}
+	$H(X) \geq 0$.
+\end{lemma}
+\begin{proof}
+	$\log(\frac{1}{p(x)}) = -\log(p(x))$. Since probabilities are between $0$ and $1$, this logarithm is always non-positive, and thus the term itself is always non-negative. 
+\end{proof}
+To define entropy using a logarithm base other than $2$ changes the unit of measurement, but shouldn't actually change the measurement itself. For a number $b$, let $H_b(X)$ denote the entropy in which the logarithm of the definition is taken as base $b$. 
+\begin{lemma}	
+	For any possible bases $a$ and $b$, $H_b(X) = (\log_b(a))H_a(X)$
+\end{lemma}
+\begin{proof}
+	This follows from the basic formula for changing a logarithm base: 
+	\[ \log_a(x) = \frac{\log_b(x)}{\log_b(a)} \]
+	Multiplying both sides of this gives that $\log_b(x) = \log_a(x)\log_b(a)$. Substituting this for $\log_b(x)$ in the formula for $H_b$ and pulling the term out of the sum gives the desired result. 
+\end{proof}
+Suppose we are concerned with the outcome of a system consisting of two different information sources. For this, we must have a definition of the joint entropy of the overall system.
+\begin{definition}
+	The \textbf{joint entropy} $H(X,Y)$ of a pair of discrete random variables $(X,Y)$ with a joint probability mass function $p(x,y)$ is defined as 
+	\begin{align}
+		H(X,Y) = -\sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x,y)\log(p(x,y))
+	\end{align}
+\end{definition}
+Once again, if all outcomes from both sources are equally likely, and the number of possibilities for each are $n$ and $m$ respectively, then the total number of possibilities for the system is the product $nm$, and the joint entropy of the system becomes simply $\log(nm)$, as we would hope and expect. \par 
+Recall that for a pair of random variables, one can think about the conditional distribution of one variable $Y$ given a fixed outcome of the other (say $X = x$):
+\[ p(y|x) = p(Y = y|X = x) \]
+Fixing an $x$, we obtain a conditional random variable $Y|X=x$, which has it's own expected value different for each $x$. Accordingly, each has it's own entropy $H(Y|X=x)$. 
+\begin{definition}
+	The \textbf{conditional entropy of $Y$ given $X$} is defined as 
+	\begin{align}
+		H(Y|X) = \sum_{x \in \mathcal{X}} p(x)H(Y|X=x) 
+	\end{align}
+I.e. it is the average entropy of $Y|X=x$, weighted according to the probability of getting each particular $x$. Intuitively, it is our uncertainy 
+\end{definition}
+Note that 
+\begin{align}
+	H(Y|X) &= \sum_{x \in \mathcal{X}} p(x)H(Y|X=x) \\	
+			&= -\sum_{x \in \mathcal{X}} p(x)\sum_{y \in \mathcal{Y}} p(y|x)\log(p(y|x)) \\
+			&= -\sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x)p(y|x) \log(p(y|x)) \\
+			&= -\sum_{x \in \mathcal{X}}\sum_{y \in \mathcal{Y}} p(x,y)\log(p(y|x)) \\ 
+			&= -E(\log(p(Y|X)) 
+\end{align}
+where $\log(p(Y|X))$, the logarithm of the conditional probability of a particular $Y$ given a particular $X$, is seen as a function of the joint random pair $(X,Y)$, and the last step following from the law of the unconscious statistician.
+\begin{theorem}[Chain rule]
+	The joint entropy of a random pair $(X,Y)$ is the entropy of $1$ variable plus the conditional entropy of the second variable given the first. That is,  \[H(X,Y) = H(X) + H(Y|X) \]
+\end{theorem}
+\begin{proof}
+	\begin{align}
+		H(X,Y) &= -\sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x,y)\log(p(x,y)) \\
+			&= -\sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x,y)\log(p(x)p(y|x)) \\
+			&= -\sum_{x \in \mathcal{X}} \cancelto{p(x)}{\sum_{y \in \mathcal{Y}} p(x,y)}\log(p(x)) -\sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x,y)\log(p(y|x)) \\ 
+		 	&= -\sum_{x \in \mathcal{X}} p(x)\log(p(x)) - \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x,y)\log(p(y|x)) \\ 
+		 	&= H(X) + H(Y|X)
+	\end{align}
+\end{proof}
+The chain rule for entropy can be extended easily to any number of joint variables. Consider for instance a triplet $(X,Y,Z)$. It can easily be shown in identical manner to the above that
+\[ H(Y,Z|X) = H(Y|X) + H(Z|X,Y) \]
+So that
+\begin{align} 
+	H(X,Y,Z) = H(X) + H(Y,Z|X) = H(X) + H(Y|X) + H(Z|X,Y)
+\end{align}
+And so on for however many variables. 
+\subsection{Conditional Entropy and Mutual Information}
+\begin{definition}
+	The \textbf{relative entropy} or \textbf{Kullback-Leibler distance} between two probability mass functions $p(x)$ and $q(x)$ (defined over the same alphabet $\mathcal{X}$) is defined as 
+	\begin{align}
+		D(p||q) &= \sum_{x \in \mathcal{X}} p(x) \log\left( \frac{p(x)}{q(x)} \right) \\
+		&= E_p\left(\log\left(\frac{p(X)}{q(X)} \right)\right)
+	\end{align}
+where $E_p$ denotes that we are taking the expected value of a function of the random variable $X$ under the assumption that the true distribution of $X$ is $p$. 
+\end{definition}
+In other words, the relative entropy between the two distributions $p$ and $q$ is defined to be the expected error in assuming that the distribution is $q$ given that it is actually $p$. It can in some sense be seen as a measure of the distance between two distributions, but it isn't actually a metric due to it's implicit bias towards one over the other (meaning that $D(p||q) \neq D(q||p)$) as well as the fact that it doesn't satisfy the triangle inequality. We will however see that it is non-negative and $0$ iff $p = q$. Before that though, one more definition.
+\begin{definition}
+	Let $X$ and $Y$ be random variables with joint probability mass function $p(x,y)$ and marginal probability mass functions $p(x)$ and $p(y)$. The \textbf{mutual information between $X$ and $Y$}, denoted $I(X;Y)$ is the relative entropy between the joint distribution $p(x,y)$ and the product of the marginal distributions $p(x)$ and $p(y)$. I.e. 
+	\begin{align}
+		I(X;Y) &= D(p(x,y)||p(x)p(y)) \\
+			&= \sum_{x \in \mathcal{X}}\sum_{y \in \mathcal{Y}} p(x,y)\log\left( \frac{p(x,y)}{p(x)p(y)} \right) \\
+			&= E_{p(X,Y)}\log\left( \frac{p(X,Y)}{p(X)p(Y)} \right) 
+	\end{align}
+\end{definition}
+The mutual information between $X$ and $Y$ is easily related to our notions of entropy:
+\begin{align}
+	I(X;Y) &= \sum_{x,y} p(x,y) \log\left( \frac{p(x,y)}{p(x)p(y)}\right) \\
+		   &= \sum_{x,y} p(x,y) \log\left( \frac{ \cancel{p(y)} p(x|y)}{p(x)\cancel{p(y)}} \right) \\
+		   &=  \sum_{x,y}p(x,y)\log(p(x|y)) - \sum_{x,y} p(x,y)\log(p(x)) \\
+		   &= - \sum_x p(x)\log(p(x)) - \left( - \sum_{x,y}p(x,y)\log(p(x|y)) \right) \\
+		   &= H(X) - H(Y|X)
+\end{align}
+Note that we could have just as easily replaced $p(x,y)$ with $p(x)p(y|x)$ to obtain $H(Y) - H(X|Y)$. Thus 
+\begin{align}
+	I(X;Y) = H(X) -H(Y|X) = H(Y)-H(X|Y)
+\end{align}
+But remember by the chain rule that $H(X,Y) = H(Y) + H(X|Y) \implies H(X|Y) = H(X,Y) - H(Y)$, so that 
+\begin{align}
+	I(X;Y) = H(X)+H(Y)-H(X,Y)
+\end{align}
+sparking immediate comparison with the classic addition rule for probabilities. 
+Finally, note that $I(X;X) = H(X) - H(X|X)$. Since $H(X|X = x) = 0$ clearly, $H(X|X) = 0$, so that $I(X;X) = H(X)$. The mutual information between a source of information and itself is just the entropy, as one would hope. For this reason, entropy is sometimes referred to as \textbf{self-information}. We summarize these identites as a theorem:
+\begin{theorem}[Mutual information and entropy]
+\end{theorem}
+We have the following:
+\begin{enumerate}
+	\item[(1)] $I(X;Y) = H(X) - H(X|Y) = H(Y)-H(Y|X)$ 
+	\item[(2)] $I(X;Y) = H(X) + H(Y) - H(H,Y)$ 
+	\item[(3)] $I(X;Y) = I(Y;X)$ 
+	\item[(4)] $I(X;X) = H(X)$
+\end{enumerate}
+We already have a chain rule for entropy. Towards deriving similar chain rules for mutual information and relative entropy, we define conditional versions of these as we did for entropy. 
+\begin{definition}
+	The \textbf{conditional mutual information} of the random variables $X$ and $Y$ given $Z$ is defined by 
+	\begin{align}
+		I(X;Y|Z) &= H(X|Z) - H(X|Y,Z) \\
+			&= E_{p(x,y,z)} \log\left( \frac{p(X,Y|Z)}{p(X|Z)p(Y|Z)} \right)
+	\end{align}
+\end{definition}
+\begin{definition}
+	For joint probability mass functions $p(x,y)$ and $q(x,y)$, the \textbf{conditional relative entropy} $D(p(y|x)||q(y|x))$ is the expected error assuming that the conditional distribution of $Y$ given $X$ is $q(x|y)$ when it is actually $p(x|y)$. More precisely:
+	\begin{align}
+		D(p(y|x)||q(y|x)) &= \sum_x p(x) \sum_y \log\left( \frac{p(y|x)}{q(y|x)} \right) \\
+		&= E_{p(x,y)} \log\left( \frac{p(Y|X)}{q(Y|X)} \right)
+	\end{align}
+\end{definition}
+\begin{theorem}[Chain rules for entropy, mutual information, and relative entropy]
+	For entropy, we have:
+\begin{align}
+	H(X_1,X_2,X_3,\ldots,X_n) &= H(X_1)+H(X_2|X_1)+H(X_3|X_2,X_1) +\ldots + H(X_n|H_{n-1},\ldots,H_1) \\
+	&= \sum_{i=1}^n H(X_i|X_{i-1},\ldots,X_1)
+\end{align}
+	For mutual information, we have
+\begin{align}
+	I(X_1,X_2,\ldots,X_n;Y) &= I(X_1;Y)+I(X_2;Y|X_1)+\ldots + I(X_n;Y|X_{n-1},\ldots,X_1) \\
+	&= \sum_{i=1}^n I(X_i;Y|X_{i-1},\ldots,X_1)
+\end{align}
+And for relative entropy, only the base case is necessary. We have
+\begin{align}
+	D(p(x,y)||q(x,y)) = D(p(x)||q(x))+D(p(y|x),q(y|x))
+\end{align}
+\end{theorem}
+\begin{proof}
+	The entropy formula was already demonstrated earlier. As for mutual information, note that
+	\begin{align}
+		I(X_1,X_2;Y) &= H(X_1,X_2) - H(X_1,X_2|Y) \\
+			&= H(X_1)+H(X_2|X_1) - (H(X_1|Y)+H(X_2|X_1,Y)) \\
+			&= H(X_1) - H(X_1|Y) + H(X_2|X_1) - H(X_2|X_1,Y) \\
+			&= I(X_1;Y) + I(X_2;Y|X_1) 
+	\end{align} 
+The case for general $n$ is identical using the general chain rule formula for entropy, just messier. Finally for conditional relative entropy, 
+\begin{align}
+	D(p(x,y)||q(x,y)) &= \sum_x \sum_y p(x,y)\log\left( \frac{p(x,y)}{q(x,y)} \right) \\
+	&= \sum_x \sum_y p(x,y)\log\left( \frac{p(x)p(y|x)}{q(x)q(y|x)} \right) \\
+	&= \sum_x \sum_y p(x,y)\log\left[ \left( \frac{p(x)}{p(y)} \right) \left( \frac{p(y|x)}{q(y|x)} \right) \right] \\
+	&= \sum_x \sum_y p(x,y)\log\left( \frac{p(x)}{q(x)} \right) + \sum_x \sum_y p(x,y) \log\left( \frac{p(y|x)}{q(y|x)} \right) \\
+	&= D(p(x)||q(x)) + D(p(y|x)||q(y|x))
+\end{align}
+\end{proof}
+\subsection{General Theory of Entropy}
+To derive some general relationships between these values, it will be helpful to recall some basic ideas regarding convexity. A function $f(x)$ is convex over an interval $(a,b)$ if for every $x_1,x_2 \in (a,b)$ and $0 \leq \lambda \leq 1$, 
+\[ f(\lambda x_1 + (1-\lambda)x_2) \leq \lambda f(x_1) + (1-\lambda)f(x_2) \]
+and is strictly convex if equality holds only when $\lambda = 0$ or $1$. Visually, convex functions lie underneath any chord (i.e. line connecting two points on the curve), and in terms of calculus, a differentiable function is convex over some interval if it has a non-negative second derivative over it (and strictly convex if it has a positive second derivative). A function $f$ is concave if $-f$ is convex, and convex if $-f$ is concave. \par 
+Suppose $p_1$ and $p_2$ are numbers between $0$ and $1$ which sum to $1$, and that $f$ is a convex function on the relevant interval. Then $p_1 = \lambda$, $p_2 = 1-\lambda$, and so 
+\[ f(p_1x_1 + p_2x_2) \leq p_1f(x_1)+p_2f(x_2) \] 
+Fair enough, but now suppose we have some $k$ many $p_i$'s $p_1,p_2,\ldots,p_k$ between $0$ and $1$ which sum to $1$. Then if we define $p_i' = \frac{p_i}{1-p_k}$, we have a collection of $k-1$ many $p_i'$'s which sum to $1$. So by the inductive hypothesis and the definition of convexity with $\lambda = p_k$ we have
+\begin{align*}
+	\sum_{i=1}^k p_if(x_i) &= p_kf(k)+(1-p_k)\sum_{i=1}^{k-1}p_i'f(x_i) \\
+		&\geq p_kf(x_k)+(1-p_k)f\left( \sum_{i=1}^{k-1} p_i'x_i \right) \\
+		&\geq f\left( p_kx_k+(1-p_k)\sum_{i=1}^{k-1}p_i'x_i \right) \\
+		&= f\left( \sum_{i=1}^k p_ix_i \right)
+\end{align*} 
+
+This is a very handy conception of convexity when dealing with probability theory. It also can be used to easily demonstrate the following:
+\begin{theorem}[Jensen's Inequality]
+	If $f$ is a convex function and $X$ is a random variable, then 
+\begin{align}
+	E(f(X)) \geq f(E(X))
+\end{align}
+Moreover, we have equality iff $X$ is constant.
+\end{theorem}
+Our first use of Jensen's inequality is the following:
+\begin{theorem}[Relative entropy is a kinda-sorta metric]
+	For any pair of probability mass functions $p$ and $q$ over the same alphabet $\mathcal{X}$, we have
+	\begin{align}
+		D(p||q) \geq 0
+	\end{align}
+with equality iff $p(x) = q(x)$ for all $x \in \mathcal{X}$. 
+\end{theorem}
+\begin{proof}
+	It is worth first observing that $f(x) = \log(x)$ is a concave function. So $-\log(x)$ is convex, and from the above this means if we have a set of non-zero probabilities $p_i$ summing to $1$ (as we do with $p(x)$ over it's support $A = \{x: p(x) > 0\}$), we have 
+	\[ -\log\left(\sum_{i=1}^n p_ix_i) \right) \leq -\sum_{i=1}^n p_i \log(x_i) \]
+Therefore 
+	\[ \sum_{i=1}^n p_i \log(x_i) \leq \log\left( \sum_{i=1}^n p_ix_i \right) \]
+	In the context of this proof, the $x_i$ will be the ratios $\frac{q_i}{p_i}$. Observe:
+\begin{align}
+	-D(p||q) &= -\sum_{x \in A} p(x)\log\left(\frac{p(x)}{q(x)}\right) \\
+		&= -\sum_{x \in A} p(x) (\log(p(x)) - \log(q(x))) \\
+		&= \sum_{x \in A} p(x) (\log(q(x)) - \log(p(x))) \\
+		&= \sum_{x \in A} p(x) \log\left( \frac{q(x)}{p(x)} \right) \\
+		&\leq \log\left( \sum_{i \in A} p(x)\frac{q(x)}{p(x)} \right) \\
+		&= \log\left( \sum_{i=1}^n q(x) \right) \\
+		&= \log(1) = 0
+\end{align}
+Thus we have $-D(p||q) \leq 0$, and so $D(p||q) \geq 0$. Moreover, $\log(x)$ is actually \emph{strictly} concave, and so we have equality iff $\frac{q(X)}{p(X)}$ is not actually a random variable but rather constant, i.e. there exists a $c$ such that $\frac{q(x)}{p(x)} = c$ for all $x$. This means that $q(x) = cp(x)$, so that 
+\[ c = c\sum_{x \in A}p(x) = \sum_{x \in A} cp(x) = \sum_{x \in A} q(x) = 1 \]
+Thus we have equality iff $p(x) = q(x)$ for all $x$. 
+\end{proof}
+This expected result required some technical finesse to prove, but using it we can demonstrate many other expected results.
+\begin{corollary}
+	For any two random variables $X,Y$,
+	\begin{align}
+		I(X;Y) \geq 0
+	\end{align}
+with equality iff $X$ and $Y$ are independent. 
+\end{corollary}
+\begin{proof}
+	$I(X;Y) = D(p(x,y)||p(x)p(y)) \geq 0$, so that follows immediately. Also we have equality iff $p(x,y) = p(x)p(y)$ for all $x,y$, i.e. iff $X$ and $Y$ are independent.
+\end{proof}
+Identically we also have the following inequalities for conditional mutual information and conditional relative entropy by their definitions:
+\begin{corollary}
+\begin{align}
+D(p(y|x)||q(y|x)) \geq 0 
+\end{align}
+	with equality iff $p(y|x) = q(y|x)$ for all $y$ and $x$ such that $p(x) > 0$, and 
+\begin{align}
+	I(X;Y|Z) \geq 0 
+\end{align}
+with equality iff $X$ and $Y$ are conditionally independent given $Z$.
+\end{corollary}
+Finally, we can show something extremely important: that entropy is maximal precisely when all outcomes are equally likely.
+\begin{theorem}[Non-uniformity only reduces uncertainty]
+	$H(X) \leq \log(|\mathcal{X}|)$, with equality iff $X$ has a uniform distribution over $\mathcal{X}$. 
+\end{theorem}
+\begin{proof}
+	Let $|\mathcal{X}| = n$, and let $u(x) = \frac{1}{n}$ denote the uniform distribution over $\mathcal{X}$. Let $p(x)$ denote the actual probability mass function for $X$. Then
+\begin{align}
+	D(p||u) &= \sum_x p(x)\log\left(\frac{p(x)}{u(x)}\right) \\
+			&= \sum_x p(x)(\log(p(x)) - \cancelto{0}{\log(1)} + \log(n)) \\
+			&= \sum_x p(x)\log(n) + \sum_x p(x)\log(p(x)) \\
+			&= \log(n)\cancelto{1}{\sum_x p(x)} - H(X)
+\end{align}
+By non-negativity of relative entropy, 
+\begin{align}
+	& 0 \leq D(p||u) = \log(n)-H(X) \\
+	&\implies H(X) \leq \log(n)
+\end{align}
+Moreover since $D(p||u) = 0$ iff $p=u$, it follows that entropy only meets this upper bound when $p$ is the uniform distribution. 
+\end{proof}
+This also leaves us with a very instructive new equation for entropy:
+\begin{align}
+	H(p) = \log(|\mathcal{X}|)-D\left( p||\frac{1}{|\mathcal{X}|} \right)
+\end{align}
+In other words, our definition of entropy is exactly the simpler logarithmic measure of variety that we started with modified by the relative difference between the uniform distribution and the actual probability distribution. When one substitutes that for entropy, the substitution is precisely as accurate as the correctness of the statement ``all states are equally likely''.
+\begin{theorem}[Conditioning reduces entropy]
+	For any random variables $X$ and $Y$, 
+\begin{align}
+	H(X|Y) \leq H(X)
+\end{align}
+with equality iff $X$ and $Y$ are independent. 
+\end{theorem}
+\begin{proof}
+	$0 \leq I(X;Y) = H(X) - H(X|Y)$, meaning that $H(X|Y) \leq H(X)$. As noted, equality is only achieved when $X$ and $Y$ are independent.
+\end{proof}
+This further solidifies that we have the correct definition of entropy, because it shows that gaining information can only reduce it. The idea is that a reduction of uncertainty corresponds to an acquisition of information, and this is exactly what we just said. 
+\begin{theorem}
+	Let $X_1,X_2,\ldots,X_n$ be identically distributed random variables. Then
+\begin{align}
+	H(X_1,X_2,\ldots,X_n) \leq \sum_{i=1}^n H(X_i)
+\end{align}
+ with equality iff all of the $X_i$ are independent.
+\end{theorem}
+\begin{proof}
+	By the chain rule for entropy, 
+\begin{align}
+	H(X_1,X_2,\ldots,X_n) &= \sum_{i=1}^n H(X_i|X_{i-1},\ldots,X_1) \\
+		&\leq \sum_{i=1}^n H(X_i)
+\end{align}
+As noted above, equality is only achieved when the $X_i$'s are all independent. 
+\end{proof}
+This settles the relevant inequalities. To inspect the concavity of our various tools, we need one more inequality pertaining to logarithms which follows from convexity.
+\begin{lemma}[Log-sum Inequality]
+ For nonnegative numbers $a_!,a_2,\ldots,a_n$ and $b_1,b_2,\ldots,b_n$, we have
+ \begin{align}
+ 	\sum_{i=1}^n a_i\log\left(\frac{a_i}{b_i}\right) \geq \left(\sum_{i=1}^n a_i\right)\log\left(\frac{\sum_{i=1}^n a_i}{\sum_{i=1^n}b_i}\right)
+ \end{align}
+ using the convention that $0\log0 = 0$, $a\log\frac{a}{0} = \infty$ for $a>0$ and $0\log\frac{0}{0} = 0$. (These are what continuity would imply anyway). Moreover we have equality iff $\frac{a_i}{b_i}$ is constant for each $i$. 
+\end{lemma}
+At first glance this is a very confusing inequality to stare at. The best way to understand what it actually gives you is to look at it from right to left, and note that we are going from three different summations to just one. That's what this inequality really says - that if you're willing to get something bigger, you can push all of the summing of terms to the end of a calculation.
+\begin{proof}
+	If all of the $a$'s and $b$'s are $0$ then both sides of this inequality are $0$, and so the statement holds. If all of the $b$'s are $0$ and at least one of the $a$'s isn't, then the lefthand side is $\infty$ and so is the rigthand side, so the statement holds once more. Thus without loss of generality assume that all of the $a_i$'s and $b_i$'s are nonzero. \par 
+	Let $\alpha_i = \frac{b_i}{\sum_{j=1}^n b_j}$ and $t_i = \frac{a_i}{b_i}$ for each $i$. Note that the $\alpha_i$ are all positive and sum to $1$. Consider the function $f(t) = t\log(t)$. The second derivative of this function is $\frac{1}{t}\log(e)$, which is positive for all positive reals, and therefore $f(t)$ is convex. We therefore have 
+	\[ f\left(\sum_i \alpha_i t_i \right) \geq \sum_i \alpha_i f(t_i) \]
+Flipping this around and plugging in the $a_i$'s and $b_i$'s gives us what we want:
+\begin{align}
+	& \sum_i \frac{\cancel{b_i}}{\sum_j b_j} \frac{a_i}{\cancel{b_i}} \log\left( \frac{a_i}{b_i} \right) \geq \left( \sum_i \frac{\cancel{b_i}}{\sum_j b_j} \frac{a_i}{b_i} \right)\log\left( \sum_i \frac{\cancel{b_i}}{\sum_j b_j} \frac{a_i}{\cancel{b_j}} \right) \\
+	&\implies \cancel{\left(\frac{1}{\sum_j b_j} \right)}\sum_i a_i\log\left(\frac{a_i}{b_i}\right) \geq  \cancel{\left(\frac{1}{\sum_j b_j} \right)}\left(\sum_i a_i \right)\log\left(\frac{\sum_i a_i}{\sum_j b_j}\right) \\
+	&\implies \sum_{i=1}^n a_i\log\left(\frac{a_i}{b_i}\right) \geq \left(\sum_{i=1}^n a_i\right)\log\left(\frac{\sum_{i=1}^n a_i}{\sum_{i=1^n}b_i}\right)
+\end{align}
+\end{proof}	
+\begin{theorem}[Convexity of relative entropy]
+	$D(p||q)$ is a convex function of the pair $(p,q)$; that is to say if $(p_1,q_1)$ and $(p_2,q_2)$ are two pairs of probability mass functions, then 
+\begin{align}
+	D[\lambda p_1 + (1-\lambda)p_2 || \lambda q_1 + (1-\lambda)q_2] \leq \lambda D(p_1||q_1) + (1-\lambda)D(p_2||q_2)
+\end{align}
+for all $\lambda \in (0,1)$. 
+\end{theorem}
+\begin{proof}
+	For each $x \in \mathcal{X}$, note that
+\begin{align}
+	& (\lambda p_1(x) + (1-\lambda)p_2(x))\log\left(\frac{\lambda p_1(x)+(1-\lambda)p_2(x)}{\lambda q_1(x) + (1-\lambda)q_2(x)} \right) \\
+	&\leq \lambda p_1(x)\log\left(\frac{\lambda p_1(x)}{\lambda q_1(x)} \right) + (1-\lambda)p_2(x)\log\left(\frac{(1-\lambda)p_2(x)}{(1-\lambda)q_2(x)} \right) 
+\end{align}
+But $D(\lambda p_1 + (1-\lambda)p_2|| \lambda q_1 + (1-\lambda)q_2)$ is the summation of all of these terms for each $x$. Thus
+\begin{align}
+	& D(\lambda p_1 + (1-\lambda)p_2|| \lambda q_1 + (1-\lambda)q_2) \\ &= \sum_{x \in \mathcal{X}} (\lambda p_1(x) + (1-\lambda)p_2(x))\log\left(\frac{\lambda p_1(x)+(1-\lambda)p_2(x)}{\lambda q_1(x) + (1-\lambda)q_2(x)} \right) \\
+	 &\leq \sum_{x \in \mathcal{X}} \lambda p_1(x)\log\left(\frac{\cancel{\lambda} p_1(x)}{\cancel{\lambda} q_1(x)} \right) + \sum_{x \in \mathcal{X}}(1-\lambda)p_2(x)\log\left(\frac{\cancel{(1-\lambda)}p_2(x)}{\cancel{(1-\lambda)}q_2(x)} \right) \\
+	 &= \lambda D( p_1||q_1) + (1-\lambda) D( p_2 || q_2)
+\end{align}
+\end{proof}
+As always, we are working with relative entropy because we actually want to show results about the other stuff:
+\begin{theorem}[Concavity of entropy]
+	$H(p)$ is a concave function of the probability distribution $p$. That is to say, if $\lambda \in (0,1)$ and $p_1$ and $p_2$ are two different distributions over the same alphabet $\mathcal{X}$, then 
+\begin{align}
+ H(\lambda p_1 + (1-\lambda)p_2) \geq \lambda H(p_1) + (1-\lambda)H(p_2) 
+\end{align}
+\end{theorem}
+\begin{proof}
+	Recall that
+	\[	H(p) = \log(|\mathcal{X}|)-D\left( p||\frac{1}{|\mathcal{X}|} \right)\]
+Now $\log(x)$ is a concave function, $-D(p||\frac{1}{|\mathcal{X}|})$ is as well. Thus $H(p)$ is the sum of two concave functions, itself concave. 
+\end{proof}
+This isn't the only way to prove that entropy is a concave function of the distribution, and the second way is instructive. Let $X_1$ be a random variable with distribution $p_1$, taking on values in a set $\mathcal{X}$, and let $X_2$ be another random variable with distribution $p_2$ on the same set. Let 
+\begin{align}
+	\theta = \begin{cases}
+		1 & \textrm{with probability } \lambda \\
+		2 & \textrm{with probability } 1-\lambda
+	\end{cases}
+\end{align}
+Let $Z = X_{\theta}$, i.e. we select one of the random variables at random and then sample from it. Note that the distribution of $Z$ is $r(x) = \lambda p_1(x) + (1-\lambda)p_2(x)$. Now we know that conditioning only reduces entropy, i.e.
+  \[ H(Z) \geq H(Z|\theta) \]
+But then by definition of conditional entropy,
+\begin{align}
+	H(\lambda p_1 + (1-\lambda)p_2) \geq \lambda H(p_1) + (1-\lambda)H(p_2)
+\end{align}
+giving us concavity. One consequence of this fact is that mixing together two gases of equal entropy results in a gas with higher entropy, as we would expect. \par 
+	The book I'm currently reading out of has a corresponding result for mutual information but it looks annoying and not very useful so I'm not going to write it out until I see it used somewhere. 
+\begin{definition}
+	Random variables $X,Y,Z$ are said to form a \textbf{Markov chain} in that order (denoted $X \to Y \to Z$) if the conditional distribution of $Z$ depends only on $Y$ and is conditionally independent of $X$. Specifically, $X,Y,Z$ form a Markov chain $X \to Y \to Z$ if the joint probability mass function can be written
+	\begin{align}
+		p(x,y,z) = p(x)p(y|x)p(z|y)
+	\end{align}
+\end{definition}
+Note that $X \to Y \to Z$ iff $X$ and $Z$ are conditionally independent given $Y$. This is because
+\begin{align}
+	p(x,z|y) = \frac{p(x,y,z)}{p(y)} = \frac{p(x,y)p(z|y)}{p(y)} = \left(\frac{p(x,y)}{p(y)}\right)p(z|y) = p(x|y)p(z|y)
+\end{align} 
+Also note that $X \to Y \to Z$ iff $Z \to Y \to X$. This is because $X \to Y \to Z$ implies
+\begin{align}
+	p(x,y,z) = p(z)p(y|z)p(x|z,y) = p(z)p(y|z)p(x|y)
+\end{align}
+Finally note that if $Z$ is any function of $Y$, i.e. $Z = f(Y)$, then $X \to Y \to Z$ is clearly a Markov chain for any $X$. 
+\begin{theorem}[Data-processing inequality]
+	If $X \to Y \to Z$ then $I(X;Y) \geq I(X;Z)$. In other words, there is always more (at least as much) information shared between random variables nearer to each other in a Markov process.
+\end{theorem}
+\begin{proof}
+	By the chain rule for mutual information, we can expand the mutual information of $X$ with $(Y,Z)$ in two different ways
+	\begin{align}
+		I(X;Y,Z) &= I(X;Z)+I(X;Y|Z) \\
+				 &= I(X;Y)+I(X;Z|Y)
+	\end{align}	
+Since $X$ and $Z$ are conditionally independent given $Y$, we have that $I(X;Z|Y) = 0$. Thus
+\begin{align}
+	I(X;Z) + I(X;Y|Z) = I(X;Y)
+\end{align}
+Since $I(X;Y|Z) \geq 0$, it follows that $I(X;Z) \geq I(X;Y)$. 
+\end{proof}
+\begin{corollary}
+	In particular if $Z = g(Y)$, we have $I(X;Y) \geq I(X;g(Y))$. 
+\end{corollary}
+Thus functions of the data (i.e. doing fancy tricks with it) cannot increase the information given about $X$. Quite the opposite, in fact; it can only destroy information one may have had. 
+\begin{corollary}
+	If $X \to Y \to Z$ then $I(X;Y|Z) \leq I(X;Y)$.
+\end{corollary}
+Thus, the dependence of $X$ and $Y$ is decreased by the observation of a `downstream' random variable $Z$. 
+\subsection{Fano's Inequality}
+To following is necessary for proving the noisy channel coding theorem later on. The idea is that we have a random variable $X$, which upon being fed through a communication channel produces a new random variable $Y$ based on the imperfections of communication. The receiver of the information wants to recover the value of $X$ and applies some function to it, in order to get a third variable $\hat{X} = g(Y)$, in order to estimate $X$. We therefore call $\hat{X}$ an \textbf{estimator} for $X$, and it is clear that $X \to Y \to \hat{X}$ forms a Markov chain. Define the \textbf{probability of error} to be $P_e = P(\hat{X} \neq X)$. 
+\begin{theorem}[Fano's Inequality]
+	For an estimator $\hat{X}$ such that $X \to Y \to \hat{X}$, we have 
+	\begin{align}
+		H(P_e)+P_e\log(|\mathcal{X}|) \geq H(X|\hat{X}) \geq H(X|Y)
+	\end{align}
+	where $H(P_e)$ denotes the entropy of a Bernoulli random variable with probability of success $P_e$. 
+\end{theorem}
+Notably, this theorem's claim can be weakened. Since $H(P_e) \leq 1$, we also have
+\begin{align}
+	H(X|Y) \leq 1+P_e\log(|\mathcal{X}|)
+\end{align}
+so that
+\begin{align}
+	P_e \geq \frac{H(X|Y)-1}{\log(|\mathcal{X}|)}
+\end{align}
+\begin{proof}
+	Define the error random variable
+	\begin{align}
+		E = \begin{cases} 1 & \textrm{if }\hat{X} \neq X \\ 0 & \textrm{if }\hat{X}=X \end{cases}
+	\end{align}
+	By the chain rule for entropy we have
+	\begin{align}
+		H(E,X|\hat{X}) = H(X|\hat{X}) + H(E|X,\hat{X})
+	\end{align}
+	as well as 
+	\begin{align}
+		H(E,X|\hat{X}) = H(E|\hat{X}) + H(X|E,\hat{X})
+	\end{align}
+	of these terms, we know that $H(E|X,\hat{X})$ is the uncertainty of an error given both the input and the decoded output, which is of course $0$. By the fact that conditioning reduces uncertainty, $H(E|\hat{X}) \leq H(E) = H(P_e)$. Also 
+	\begin{align}
+		H(X|E,\hat{X}) &= H(X|E=0,\hat{X})P(E=0) + H(X|E=1,\hat{X})P(E=1) 
+	\end{align}
+	of these terms, $H(X|E=0,\hat{X})$ is the uncertainty in $X$ given we have our estimator and are sure it is correct, i.e. $0$. $P(E=1) = P_e$. As for $H(X|E=1,\hat{X})$, we are discussing the uncertainty in $X$ given we know there was an error and that our estimator is wrong. This rules out one of the $|\mathcal{X}|$ possibilities, leaving $|\mathcal{X}|-1$ many. Thus $H(X|E=1,\hat{X}) \leq \log(|\mathcal{X}-1|)$. Thus we have
+	\begin{align}
+		H(X|E,\hat{X}) &\leq H(P_e) + P_e\log(|\mathcal{X}-1|) \\ &\leq H(P_e)\log(\mathcal{X}|) 
+	\end{align} 
+	But $H(X|E,\hat{X}) = H(X|\hat{X})$ by our first application of the chain rule. Thus
+	\begin{align}
+		H(X|\hat{X}) \leq H(P_e) + P_e\log(|\mathcal{X}|)
+	\end{align}
+	That $H(X|\hat{X}) \geq H(X|Y)$ follows directly from the data-processing inequality. 
+\end{proof}
+

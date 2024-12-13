@@ -1,0 +1,89 @@
+\section{The Asymptotic Equipartition Property}
+Recall the basics of convergence of sequences of random variables. A sequence of random variables $X_1,X_2,\ldots$ converges to the random variable $X$ in probability if for every $\epsilon > 0$, $P(|X_n - X| > \epsilon) \to 0$. The sequence converges in mean square if $(E(X_n - X))^2 \to 0$. And the sequence converges with probability $1$ (or almost surely) if $P(\lim_{n \to \infty} X_n = X) = 1$.
+\begin{theorem}[Asymptotic Equipartition Property (AEP)]
+	If $X_1,X_2,\ldots \overset{iid}{\sim} p(x)$ then
+\begin{align}
+	-\frac{1}{n}\log(p(X_1,X_2,\ldots,X_n)) \overset{p}{\to} H(X)
+\end{align}
+where $p(x_1,\ldots,x_n)$ is the joint pmf. 
+\end{theorem}
+\begin{proof}
+	This is really just the weak law of large numbers. The average converges in probability to the mean, as we know. Moreover single variable functions of independent random variables are still independent random variables. Thus
+\begin{align}
+	-\frac{1}{n}\log(p(X_1,X_2,\ldots,X_n)) &= -\frac{1}{n}\log(p(X_1)p(X_2)\ldots p(X_n)) \\
+	&= -\sum \frac{\log(p(X_i))}{n} \\
+	&\overset{p}{\to} -E(\log(p(X_i)) = H(X) 
+\end{align}
+\end{proof}
+\begin{definition}
+	A \textbf{typical set} $A_{\epsilon}^{(n)}$ with respect to $p(x)$ is the set of sequences $(x_1,x_2,\ldots,x_n) \in \mathcal{X}^n$ with the property that
+	\begin{align}
+		\frac{1}{2^{n(H(X)+\epsilon)}} \leq p(x_1,x_2,\ldots,x_n) \leq \frac{1}{2^{n(H(X)-\epsilon)}}
+	\end{align}
+\end{definition}
+\begin{theorem}
+	\begin{itemize}
+		\item[(1)] If $(x_1,x_2,\ldots,x_n) \in A^{(n)}_{\epsilon}$ then
+		\[ H(X) - \epsilon \leq -\frac{1}{n}\log(p(x_1,x_2,\ldots,x_n) \leq H(X)-\epsilon \]
+		\item[(2)] $P(A^{(n)}_{\epsilon} > 1-\epsilon$ for sufficiently large $n$
+		\item[(3)] $|A^{(n)}_{\epsilon}| \leq 2^{n(H(X)+\epsilon)}$ (bars denote cardinality)
+		\item[(4)] $|A^{(n)}_{\epsilon}| \geq (1-\epsilon)2^{n(H(X)-\epsilon)}$ for sufficiently large $n$
+	\end{itemize}
+\end{theorem}
+\begin{proof}
+	For 1, simply invert all three sides of the inequality defining membership in the set $A^{(n)}_{\epsilon}$ (remembering to reverse the inequality), take the $\log$ of all three sides (remembering not to reverse the inequality), and then divide all three sides by $n$. For 2, note that for any $\epsilon > 0$
+	\begin{align}
+		P(|-\frac{1}{n}\log(p(X_1,\ldots,X_n)) - H(X)| \leq \epsilon) &= P(\frac{1}{2^{n(H(X)+\epsilon)}} \leq p(X_1,X_2,\ldots,X_n) \leq \frac{1}{2^{n(H(X)-\epsilon)}} \\
+		&= P((X_1,\ldots,X_n) \in A^{(n)}_{\epsilon}) = P(A^{(n)}_{\epsilon}) \\
+	\end{align}
+	By AEP, the probability of being in the complement of this set goes to $0$ for sufficiently large $n$, and therefore there must be a sufficient large $n$ that this probability exceeds $1-\epsilon$. For 3, note by definition of $A^{(n)}_{\epsilon}$ that 
+	\begin{align}
+		1 = \sum_{\bm{x} \in \mathcal{X}^n} p(\bm{x}) \geq \sum_{\bm{x} \in A^{(n)}_{\epsilon}} p(\bm{x}n) \geq \sum_{\bm{x} \in A^{(n)}_{\epsilon}} \frac{1}{2^{n(H(X)+\epsilon)}} = \frac{|A^{(n)}_{\epsilon}|}{2^{n(H(X)+\epsilon)}}
+	\end{align}
+	so that $|A^{(n)}_{\epsilon}| \leq 2^{n(H(X)+\epsilon)}$. Finally for 4, as we know already that $P(A_{\epsilon}^{(n)}) > 1-\epsilon$ for sufficiently large $n$, and by definition of  $A_{\epsilon}^{(n)}$ we have that
+	\begin{align}
+		1-\epsilon < P(A^{(n)}_{\epsilon}  \leq \sum_{\bm{x} \in A^{(n)}_{\epsilon}} \frac{1}{2^{n(H(X)-\epsilon)}} = \frac{|A^{(n)}_{\epsilon}|}{2^{n(H(X)-\epsilon)}}
+	\end{align}
+so that $|A^{(n)}_{\epsilon}| \geq (1-\epsilon)2^{n(H(X)-\epsilon)}$.
+\end{proof}
+The AEP has big implications for data compression. Let $\bm{X}$ be a sequence of $n$ iid random variables with probability mass function $p(x)$. We wish to find short descriptions for such sequences of random variables. Fixing an $\epsilon > 0$, we can divide $\mathcal{X}^n$ into two sets: the typical set $A^{(n)}_{\epsilon}$, and it's complement. Consider a naive attempt at coding sequences in $\mathcal{X}^n$. To use bit strings we would need $\log(|\mathcal{X}|$ many bits, and so $n\log(|\mathcal{X}|)$ for sequences of $n$ of them. However we now have an upper bound on the number of elements of the typical set: $2^{n(H(X)+\epsilon)}$, meaning coding elements of this set would only require $n(H(X)+\epsilon)$ many bits, which is smaller than $n\log(|\mathcal{X}|)$ for sufficiently small epsilon (or at the very least, when all outcomes are equally likely, no larger). \par 
+Consider the following simple coding scheme: first, a single bit $0$ or $1$ to mark whether or not the sequence is in $A_{\epsilon}^{(n)}$ or out of it. Next, if it is in the typical set, use $n(H(X)+\epsilon)$ many bits to code it under some fixed ordering, and if it isn't, just use the extra however many bits are needed. Let $l(\bm{x})$ denote the length of the code for $\bm{x}$. Then $l(\bm{X})$ is a random variable with an expected value, i.e. an expected length of the code for the sequence received from the information source. Let's see what it is for a fixed $\epsilon$ and $n$:
+\begin{align}
+	E(l(\bm{X})) = \sum_{\bm{x}} p(\bm{x})l(\bm{x}) &= \sum_{\bm{x} \in A^{(n)}_{\epsilon}} p(\bm{x})l(\bm{x}) + \sum_{\bm{x} \notin A^{(n)}_{\epsilon}} p(\bm{x})l(\bm{x}) \\
+	&\leq \sum_{\bm{x} \in A^{(n)}_{\epsilon}} p(\bm{x})(n(H(X)+\epsilon)+1) + \sum_{\bm{x} \notin A^{(n)}_{\epsilon}} p(\bm{x})(n\log(|\mathcal{X}|)+1) \\
+	&= P(\bm{x} \in A^{(n)}_{\epsilon})(n(H(X)+\epsilon)+1) + P(\bm{x}\notin A^{(n)}_{\epsilon})(n\log(|\mathcal{X}|)+1) \\
+	&\leq n(H(X)+\epsilon)+1 + \epsilon(n\log(|\mathcal{X}|)+1) \to n(H(X)+\epsilon)+1
+\end{align}
+where the final step is using the simple fact that $P(A^{(n)}_{\epsilon}) \leq 1$ as well as the fact that $P(x \notin A^{(n)}_{\epsilon}) \leq \epsilon$. Dividing both sides of this by $n$ gives us
+\begin{align}
+	E\left(\frac{1}{n}l(\bm{X})\right) = H(X)+ \epsilon + \frac{1}{n} \leq H(X)+\epsilon
+\end{align}
+Thus it appears that this very simple coding scheme has brought down the average length of a code word from $\log(\mathcal{X})$ to something very near $H(X)$. We therefore have the following theorem:
+\begin{theorem}
+	Let $X_1,X_2,\ldots,X_n$ be an iid collection of random variables with pmf $p(x)$, and $\epsilon > 0$. Then there exists a coding for elements over the shared alphabet $\mathcal{X}$ (i.e. a 1-1 mapping from $\mathcal{X}$ into bit-strings) such that 
+	\begin{align}
+		E\left(\frac{1}{n}l(\bm{X}) \right) \leq H(X) + \epsilon
+	\end{align}
+\end{theorem}
+Thus we can represent sequences $\mathcal{X}^n$ using $nH(X)$ bits on average. \par 
+To conclude, it is clear to see that the typical sets are fairly small sets which contain most of the probability. But are they the smallest such sets? The answer is yes, and we proceed to show this. \par 
+For each $n = 1,2,\ldots,n$, let $B_{\delta}^{(n)} \subseteq \mathcal{X}^n$ be the smallest set such that 
+\begin{align}
+	P(B_{\delta}^{(n)}) \geq 1-\delta
+\end{align}
+\begin{theorem}
+	Let $X_1, X_2,\ldots,X_n$ be iid with pmf $p(x)$. For $\delta < \frac{1}{2}$ and any $\delta' > 0$, if $P(B_{\delta}^{(n)}) > 1-\delta$ then for sufficiently large $n$ we have 
+	\begin{align}
+		\frac{1}{n}\log(|B_{\delta}^{(n)}|) > H- \delta'
+	\end{align}
+\end{theorem}
+Note this means that $B_{\delta}^{(n)}$ must have at least $2^{nH}$ elements. But $A_{\epsilon}^{(n)}$ has $2^{n(H\pm \epsilon)}$ elements. Thus it follows that $A^{(n)}_{\epsilon}$ has about the same number of elements as the smallest high-probability set.
+\begin{proof}
+	need to do
+\end{proof}
+That statement, that one set has `about the same number of elements' as another, deserves some elaboration. Define the notation $a_n \overset{.}{=} b_n$ to mean 
+\begin{align}
+	\lim_{n \to \infty} \frac{1}{n}\log\left(\frac{a_n}{b_n} \right) = 0
+\end{align}
+Need to finish this
+

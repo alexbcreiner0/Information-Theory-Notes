@@ -1,0 +1,90 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsthm}
+% Package for making turing machine diagrams %
+\usepackage{tikz}
+\usetikzlibrary{chains,fit,shapes}
+% Packages for algorithms %
+\usepackage{algorithm}
+\usepackage{algorithmic}
+% Package which has the nice looking empty set symbol (\varnothing)
+\usepackage{amssymb}
+% Package with the ceiling function
+%\usepackage{mathtools}
+%\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\usepackage{braket}
+\usepackage{cancel}
+\usepackage{amsmath} 
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{comment}
+\usepackage{mathtools}
+\usepackage{theoremref}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\usepackage{bm}
+
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
+
+% Makes table of contents links clickable in pdf readers
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
+
+% recursive subtraction
+\makeatletter
+\newcommand{\prc}{\mathbin{\mathpalette\prc@inner\relax}}
+\newcommand{\prc@inner}[2]{%
+  \vbox{\offinterlineskip\m@th
+    \ialign{%
+      ##\cr
+      \hidewidth\raisebox{-1.5\height}[0pt][0pt]{$#1.$}\hidewidth\cr
+      $#1-$\cr
+    }%
+  }%
+}
+\makeatother
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{problem}{Problem}
+
+\theoremstyle{plain}
+\newtheorem{example}{Example}[section]
+\newtheorem{exercise}{Exercise}[section]
+
+\theoremstyle{theorem}
+\newtheorem{fact}{Fact}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{claim}{Claim}[section]
+
+\title{Information Theory Notes}
+\author{Alex Creiner}
+\date{}
+
+\sloppy
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+\part{Shannon Information Theory}
+\include{sections/entropy.tex}
+\include{sections/asymptotic-equipartition-property.tex}
+\include{sections/entropy-rates-of-stochastic-processes.tex}
+\include{sections/data-compression.tex}
+\include{sections/data-transmission-channel-capacity.tex}
+\include{sections/ashbys-law.tex}
+
+\part{Algorithmic Information Theory}
+\include{sections/kolmogorov-complexity.tex}
+
+% \appendix
+
+\printbibliography
+
+\end{document}

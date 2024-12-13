@@ -1,0 +1,36 @@
+\section{Data Compression}
+\begin{definition}
+	A \textbf{source code} $C$ for a random variale $X$ is a mapping from $\mathcal{X}$, the range of $X$, to $\mathcal{D}^*$, the set of finite-length strings of symbols from a $D$-ary alphabet. Let $C(x)$ denote the codeword corresponding to $x$ and let $l(x)$ denote the length of $C(x)$. 
+\end{definition}
+\begin{definition}
+	The expected length $L(C)$ of a source code $C(x)$ for a random variable $x$ with pmf $p(x)$ is given by 
+	\begin{align}
+		L(C) = \sum_{x \in \mathcal{X}} p(x)l(x)
+	\end{align}
+where $l$ is the length of the codeword associated with $x$. WLOG we will assume the D-ary alphabet is $D = \{0,1,\ldots,D-1\}$. 
+\end{definition}
+\begin{definition}
+	A code is said to be \textbf{non-singular} if every element of the range of $\mathcal{X}$ maps to different strings in $\mathcal{D}*$ (so just 1-1?)
+\end{definition}
+This is obviously the place to start when thinking about coding and decoding, since it is the minimal condition for the ability to recover a symbol from a code. However, usually we are interested in coding sequences of symbols. One option is to distinguish between by adding a special symbol (usually a comma) which is only found in between codewords. But this is not very efficient. We can do better by introducing the idea of self-punctuating or instantaneous codes. 
+\begin{definition}
+	The \textbf{extension} $C^*$ of a code $C$ is the mapping from finite-length strings of $\mathcal{X}$ to finite-length strings of $\mathcal{D}$, defined by 
+	\begin{align}
+		C(x_1x_2\ldots x_n) = C(x_1)C(x_2)\ldots C(x_n)
+	\end{align}
+A code is called \textbf{uniquely decodable} if it's extension is non-singular (again, why do we have this word non-singular it's just the dumb linear algebra stuff again). 
+\end{definition}
+As a minimal condition for unique codings of strings over an alphabet, this leaves us still short of any kind of qualifications for a \emph{good} coding. The main issue still is that one may have to read over the entire coded string just to determine the first symbol of the original string. We therefore refine things with the following definition:
+\begin{definition}
+	A code is called a \textbf{prefix code} or an \textbf{instantaneous code} if no codeword is a prefix of any other codeword. 
+\end{definition}
+If no codeword is a prefix of any other codeword then an interpreter can move from left to right across the string, and whenever it finds a full codeword it can be sure that it has found a full symbol of the original string. It can therefore fully determine the original message with one single scan. An instantaneous code is therefore self-punctuating; there is no need for a special comma symbol.
+\begin{theorem}[Kraft Inequality]
+	For any prefix code over an alphabet of size $D$, the codeword lengths $l_1,l_2,\ldots,l_m$ must satisfy 
+	\begin{align}
+		\sum_i \frac{1}{D^{l_i}} \leq 1
+	\end{align}
+Conversely, given a set of codeword lengths that satisfy this inequality, there always exists a prefix code with these word lengths. 
+\end{theorem}
+Note that this sum gets larger the smaller the code lengths. Thus the optimal coding would be something which satisfies this equality perfectly. 
+

@@ -1,0 +1,293 @@
+\section{Data Transmission}
+\subsection{Channel Capacity}
+\begin{definition}
+	A \textbf{discrete channel}, denoted by $(\mathcal{X},p(y|x),\mathcal{Y})$, consists of two finite alphabets $\mathcal{X}$ and $\mathcal{Y}$ and a collection of pmf's $p(y|x)$, one for each $x \in \mathcal{X}$, with the interpretation that the random variable $X$ is the input and $Y$ is the output of the channel. A channel is \textbf{memoryless} if the distribution of the output depends only on the input at that time and is independent of previous channel outputs. 
+\end{definition}
+\begin{definition}
+	The (information) \textbf{channel capacity} of a discrete memoryless channel is 
+	\begin{align}
+		\max_{p(x)} I(X;Y)
+	\end{align}
+i.e. it is the maximum possible mutual information between input and output ranging over all possible distributions of the input variable. 
+\end{definition}
+Some examples of this are in order. 
+\begin{itemize}
+	\item \textbf{The noiseless binary channel}: This is the simplest possible channel which does something. $\mathcal{X} = \mathcal{Y} = \{0,1\}$, and here information transfers perfectly with no possible loss. Thus $p(0,0) = P(Y = 0|X=0) = 1$, $p(1,1) = 1$, and $p(1,0) = p(0,1) = 0$. Any reasonable definition of channel capacity should have $C$ equaling $1$ bit. We have
+	\begin{align}
+		I(X;Y) = I(X) - I(X|Y)
+	\end{align}
+	Note that $I(X|Y) = 0$ since knowing $Y$ removes all uncertainty about $X$. Thus maximizing the mutual information is equivalent here to maximizing the uncertainty of $X$, i.e. the uniform distribution $p(0) = p(1) = \frac{1}{2}$. In that case, $I(X;Y) = H(X) = 1$ bit, and so $C = 1$ bit as expected. 
+	\item \textbf{Noisy binary channel with non-overlapping outputs}: Let now $\mathcal{X} = \{0,1\}$ but $\mathcal{Y} = \{1,2,3,4\}$, and suppose that $0$ inputs map to either $1$ or $2$ with equal probability, while $1$ inputs map to either $3$ or $4$ with equal probability. The channel appears noisy but it really isn't, because whatever the output is there is no uncertainty about the input. Once again we can see that $H(X|Y) = 0$, and so mutual information is maximized at $1$ bit when $X$ has the uniform distribution. The channel capacity here remains $1$. 
+	\item \textbf{Noisy typewriter}: Suppose $\mathcal{X}$ is the standard $26$ letter alphabet, as is $\mathcal{Y}$, but nonetheless there any letter has an equal probability of being mapped to itself or the next letter in the alphabet. So if the input message is an $a$, there is a $\frac{1}{2}$ chance of the receiver getting either an $a$ and a $b$. (Assume $z$ has a $\frac{1}{2}$ chance of looping back around to $a$.) Note then first that the conditional entropy $H(Y|X=x)$ is that of a coin flip - the receiver knows it's either $x$ or the thing after $x$. Thus $H(Y|X=x) = 1$ bit. Therefore 
+	\begin{align}
+		H(Y|X) = \sum_x p(x)H(Y|X=x) = \sum_x p(x) = 1
+	\end{align}
+Therefore the mutual information is expressible as $I(X;Y) = H(Y) - 1$. Clearly $H(Y) \leq \log(26)$ since at worst all letters are equally likely. Furthermore this is achieved when $p(x)$ is itself the uniform distribution. Thus the maximum mutual information is $\log(26)-1 = \log(26) - \log(2) = \log(\frac{26}{2}) = \log(13)$.  Why would it be $\log(13)$ bits? The reason is that despite the noise, $X$ can still reliable communicate one of $13$ different outcomes by simple skipping every other letter. If $X$ only tries to send $a,c,e,g,\ldots$ then there will be no ambiguity. So we still haven't found a channel in which error is unavoidable. 
+	\item \textbf{Binary Symmetric Channel}: The simplest example of a communication channel with unavoidable error is the binary symmetric channel. Here $0$ has a small chance of getting flipped to a $1$ (call this probability $p$), and $1$ has an equal chance of getting flipped to a $0$. Let $H(p)$ denote the entropy of a Bernoulli random variable with parameter $p$. This is exactly $H(Y|X = x)$, regardless of $X$. Thus
+	\[ H(Y|X) = \sum_x p(x) H(Y|X=x) = \left( \sum_x p(x)\right)H(p) = H(p) \] 
+ Moreover $H(Y)$ is maximally $1$ bit, which is achieved when $X$ has the uniform distribution. This is because if $P(X = 0) = P(X = 1) = \frac{1}{2}$, then 
+	\[ P(Y=0) = P(X=0)P(Y=0|X=0) + P(X=1)P(Y=0|X=1) = \frac{1}{2}(1-p) + \frac{1}{2}p = \frac{1}{2} \]
+	which shows that $Y$ is also uniformally distributed and therefore $H(Y)$ is maximally $1$. It follows that the channel capacity is $C = 1-H(p)$. Now $H(p)$ is a curve which starts and ends at $0$, rising and falling and maximizing at $p=\frac{1}{2}$. Thus the channel capacity is $0$ when there is an equal probability of flipping or not flipping, but the channel becomes equivalent to a normal binary channel at the two extremes. This is because if the bit has a $100$ percent chance of flipping, then $X$ can just send a $0$ when they want to communicate a $1$ and send a $1$ when they want to communicate a $0$. 
+	\item \textbf{Binary Erasure Channel}: Here, rather than the bits having a probability of flipping, they have a probability of getting lost entirely. The receiver will know if the bit was lost by receiving an error, which we'll denote $e$. So $\mathcal{X} = \{0,1\}$ while $\mathcal{Y} = \{0,1,e\}$. Denote the chance of getting this error occurring $\alpha$, and assume it's the same for both possible inputs. Consider first $H(Y|X=x)$. We clearly have $p(1|0) = 0, p(0|0)=1-\alpha,$ and $p(e|0) = \alpha$. Thus
+	\[ H(Y|X=0) = \alpha\log\left(\frac{1}{\alpha}\right) + (1-\alpha)\log\left(\frac{1}{1-\alpha}\right) + 0 = H(\alpha) \] 
+	where again $H(\alpha)$ denotes the entropy of a Bernoulli random variable with parameter $\alpha$. $H(Y|X=1) = H(\alpha)$ in an identical way. Thus
+	\[ H(Y|X) = p(0)H(Y|X=0)+p(1)H(Y|X=1) = \cancelto{1}{(p(0)+p(1))}H(\alpha) = H(\alpha) \]
+	The mutual information between $X$ and $Y$ is then $I(X;Y) = H(Y) - H(\alpha)$. The question then becomes what $p(x)$ gives us a maximal $H(Y)$. Let $P(X=1) = \pi$. Then $P(Y=0) = P(X=0)P(Y=0|X=0) + P(X=1)P(Y=0|X=1) = (1-\pi)(1-\alpha)$. Similarly $P(Y=1) = \pi(1-\alpha)$, and $P(Y=e) = (1-\pi)\alpha+\pi \alpha = \alpha$. Therefore
+\begin{align}
+	H(Y) &= -\alpha\log(\alpha)-(1-\pi)(1-\alpha)(\log((1-\pi)(1-\alpha))-\pi(1-\alpha)(\log(\pi(1-\alpha)) \\
+		&= -\alpha\log(\alpha)-(1-\pi)(1-\alpha)(\log((1-\pi)+\log(1-\alpha))-\pi(1-\alpha)(\log(\pi)+\log(1-\alpha)) \\
+		&= \alpha\log(\alpha) - \left[ (1-\pi)(1-\alpha)\log(1-\alpha) + \pi(1-\alpha)\log(1-\alpha) \right] - (1-\pi)(1-\alpha)\log(1-\pi) - \pi(1-\alpha)\log(\pi) \\
+		&= [\alpha\log(\alpha) - (1-\alpha)\log(1-\alpha)] + (1-\alpha)[-(1-\pi)\log(1-\pi)-\pi \log(\pi)] \\
+		&= H(\alpha)+(1-\alpha)H(\pi)
+\end{align}
+We then have
+\[ I(X;Y) = H(Y) - H(Y|X) = H(\alpha) + (1-\alpha)H(\pi) - H(\alpha) = (1-\alpha)H(\pi) \]
+This is clearly maximized when $H(\pi)$ is maximized, which happens when $\pi = \frac{1}{2}$, in which case $H(\pi) = 1$ and we finally find that the channel capacity is $C = (1-\alpha)$. 
+\end{itemize}
+Consider specifically for a moment the binary symmetric channel. We can consider the $2\times 2$ matrix consisting of the conditional probabilities $p(y|x)$:
+\[ \begin{pmatrix} p(0|0) & p(1|0) \\ p(0|1) & p(1|1) \end{pmatrix} = \begin{pmatrix} 1-p & p \\ p & 1-p \end{pmatrix} = \begin{pmatrix} \vec{r}_1 \\ \vec{r}_2 \end{pmatrix} \]
+So $x$ values are indexed by the rows and $y$ values by the columns (somewhat backwards but it works out better this way). It is tempting to note that this matrix is symmetric, but the property of matrices defining symmetric \emph{channels} is unfortunately more subtle than this. Consider the calculation for $I(X;Y) = H(Y)-H(Y|X)$. First considering the second term we see 
+\[ H(Y|X) = \sum_x p(x)H(Y|X=x) = \sum_x \left[ -\sum_y p(y|x)\log(p(y|x)) \right] \] 
+For our particular matrix, all rows are their own probability distributions (always the case) but in particular \emph{every row is a permutation of every other row}. This means that this summation will be \emph{the same} for all possible choices of $x$. Fix $\vec{r} = \vec{r}_1$ without loss of generality, and denote the entropy of any of these distributions $H(\vec{r})$. (Note these are different distributions, with different probabilities of each possible $y$ value, but all nonetheless have the same entropy.) Then 
+\[ H(Y|X) = \sum_x p(x)H(\vec{r}) = H(\vec{r}) \]
+since the $p(x)$ all sum to $1$. We then have 
+\[ I(X;Y) = H(Y) - H(\vec{r}) \leq \log(|\mathcal{Y}|) - H(\vec{r}) \]
+Now $\vec{r}$ is independent of any choice of $p(x)$. Thus maximizing the mutual information is purely a matter of maximizing $H(Y)$. The above upper bound can be achieved in all cases by having $p(x)$ be the uniform distribution, i.e. $p(x) = \frac{1}{|\mathcal{X}|}$ for all $x$:
+\[ p(y) = \sum_{x \in \mathcal{X}} p(y|x)p(x) = \frac{1}{|\mathcal{X}|}\sum_{x \in \mathcal{X}}p(y|x) \]
+Now notice a second property of our matrix for the binary symmetric channel: \emph{all columns are also permutations of each other}. It follows that $\sum_{x \in \mathcal{X}}p(y|x)$ is the same for all $y$, and therefore $p(y)$ is the same for all $y$, i.e. $p(y)$ is the uniform distribution and therefore $H(Y) = \log(|\mathcal{Y}|)$. We therefore have two properties of the matrix which must hold in order to carry out what we just did. We summarize those in the following definitions:
+\begin{definition}
+	A channel is said to be \textbf{symmetric} if the rows of the channel's transition matrix are all permutations of one another and the columns are as well. More importantly, a channel is said to be \textbf{weakly symmetric} if every row of the channel's transition matrix is a permutation of every other row, and the columns of the matrix all sum to the same number.  
+\end{definition}
+\begin{theorem}
+	For a weakly symmetric channel, the channel capacity is given by 
+	\begin{align}
+		C = \log(|\mathcal{Y}|) - H(\vec{r})
+	\end{align}
+	where $\vec{r}$ is any row of the channel's transition matrix. Furthermore, this channel capacity is achieved when the input alphabet is given the uniform distribution. 
+\end{theorem}
+Clearly, calculating channel capacity is rather difficult and there doesn't seem to be a clear-cut way to always accomplish the task. However, it does always exist, and can always be found. 
+\begin{theorem}[Basic Properties of Channel Capacity]
+We have the following:
+	\begin{itemize}
+		\item[(1)] $C \geq 0$
+		\item[(2)] $C \leq \log(|\mathcal{X}|)$ and $C \leq \log(|\mathcal{Y}|)$
+		\item[(3)] $C$ always exists and can be found using standard optimization techniques (although there is no closed form solution to always finding it). 
+	\end{itemize}
+\end{theorem} 
+\begin{proof}
+	$1$ follows from the fact that $I(X;Y) \geq 0$. $2$ follows from the fact that $C = \max I(X;Y) \leq \max H(X) = \log(\mathcal{X})$ and also $C \leq \max H(Y) \leq  \log(|\mathcal{Y}|)$. To understand $3$ we must recall some properties of mutual information that I skipped in chapter $1$. Namely that $I(X;Y)$ is a continuous concave function of $p(x)$. Because it is a concave function over a closed and (trivially) convex set, local maximums are always global maximums. The boundedness of $C$ from $2$ therefore means that we can always use the word maximum instead of supremum. (This is lazy but I don't care right now.) 
+\end{proof}
+Right now our conceptual setup has a channel in which just one symbol from the alphabet $\mathcal{X}$ is sent over to $Y$. We wish to consider the following more general and elaborate situation:
+\begin{itemize}
+	\item[(1)] Alice has a message that she wants to send, $W$, drawn from some finite index set of possible messages $\{1,2,\ldots,M\}$. She first encodes the message via some uniquely decodable coding scheme, producing the string in the input alphabet: $W \to X^n(W) \in \mathcal{X}^n$. 
+	\item[(2)] That message $X^n(W)$ is transmitted across the channel $p(y|x)$, one symbol at a time, producing a message in the output alphabet: $X^n(W) \to Y^n$. \\
+	\item[(3)] Bob, receiving this coded message, then guesses the index of the original message via an established decoding scheme, producing the final received message $\hat{W}$. $Y^n \to \hat{W}$. 
+\end{itemize}
+We therefore need a few more definitions. First we need to define the extension of a channel to one which transmits multi-character messages.
+\begin{definition}
+	The $n^{th}$ \textbf{extension} of the discrete memoryless channel (DMC) $C = (\mathcal{X},p(y|x),\mathcal{Y})$, is the channel $(\mathcal{X}^n,p(y^n|x^n),\mathcal{Y}^n)$, where in order to maintain the principle of being memoryless we require that 
+	\begin{align}
+		p(y_k|x^k,y^{k-1}) = p(y_k|x_k)
+	\end{align}
+	for $k = 1,2,\ldots,n$. 
+\end{definition}
+Related to all of this is the concept of feedback, which is a separate consideration from memorylessness. To have feedback would be to have inputs be effected by outputs of the communication channel. If the system does \emph{not} have and feedback, then we can safely assume that 
+\[ p(x_k|x^{k-1},y^{k-1}) = p(x_k|x^{k-1}) \]
+I.e. that the next input character is independent of the output characters produced up to that point in the transmission. Note that in this case the channel transition function for the $n^{th}$ extension of a DMC can be found in a simple way:
+\begin{align}
+	p(y^n|x^n) = \prod_{i=1}^n p(y_i|x_i)
+\end{align}
+(I'm not actually seeing right now why the feedback condition is necessary for this.) \\
+\begin{definition}
+	An $(M,n)$ \textbf{code} for the channel $(\mathcal{X},p(y|x),\mathcal{Y})$ consists of the following:
+	\begin{itemize}
+		\item[(1)] An index set $\{1,2,\ldots,M\}$.
+		\item[(2)] An encoding function $X^n:\{1,2,\ldots,M\} \to \mathcal{X}^n$, yielding codewords $x^n(1),x^n(2),\ldots,x^n(M)$. The set of codewords is called the \textbf{codebook}. 
+		\item[(3)] A decoding function $g:\mathcal{Y}^n \to \{1,2,\ldots,M\}$. 
+	\end{itemize}
+\end{definition}
+Note that we are now distinguishing between two numbers: the number of messages which someone might want to send, $M$ (alternatively $M$ is the variety of a system), and the number of successive times which the channel needs to be used in order to send that information, $n$. It stands to reason that the larger the channel capacity, the less times it needs to be used to send a `full' message. For a fixed $n$, we are employing the channel for use in transmitting information - a \textbf{transmission} of an $(M,n)$ code is a sequence of $n$ successive uses of it. Consider the noiseless binary channel, which transmits just one bit at a time. If we have an information source which produces $M=1024$ possible outcomes, then it would require $\log(1024) = 10$ uses of the channel in order to communicate what happened to the receiver on the other side. Consider the number 
+\begin{align}
+	R = \frac{\log(M)}{n}
+\end{align} 
+A few things to note about this number. Firstly, one can see that the smaller it is, the less efficiently we are using our channel. It's units are clearly bits per transmission. As we noted before, $M=1024$ means we should only need to use a noiseless binary channel $10$ times in order to send any message without any possibility of error. $R$ here is therefore $\frac{10}{10}=1$: $1$ bit per one transmission, exactly as seems the maximal capability of the channel. If on the other hand we were using some overly complicated coding scheme for sending messages which required $20$ uses of the binary channel, then $R = \frac{10}{20} = \frac{1}{2}$. This tells us we are only sending half a bit of information per use of the channel, an obvious drop in the \textbf{rate} of transmission. On the other hand, the bigger the rate $R$ is, the more we are demanding of any channel. If $R = 10$, we are asking it to send $10$ bits per one transmission. This is clearly impossible to achieve for our binary channel. \par 
+A point of subtlety: This number, $R$ \emph{has nothing to do directly with the channel itself}. It is purely a property of the code $(M,n)$. Consideration of the channel is being considered in the choice of $n$, but that is itself a choice and not a property of the channel. One can define any code of any rate. The question we want to consider is whether or not a particular rate is \textbf{achievable} by a particular channel. The linkage between these notions and direct properties of a channel are given by the following definitions. Fix a channel $(\mathcal{X},p(y|x),\mathcal{Y})$ and a code $(M,n) = (\{1,2,\ldots,M\},X^n,g)$. First, define the \textbf{conditional probability of error} given the message $i$:
+	\begin{align}
+		\lambda_i = P(g(Y^n) \neq i | X^n=x^n(i)) = \sum_{y^n \in \mathcal{Y}^n} p(y^n|x^n(i)I(g(y^n)\neq i)
+	\end{align}
+This is the probability that the message is received without error given that the message was $i$. It could be different depending on the message. This allows us to define a `worst-case' measure of performance: 
+	\begin{align}
+		\lambda^{(n)} = \max_{i \in \{1,2,\ldots,M\}} \lambda_i
+	\end{align}
+This we call what it is: the \textbf{maximum probability of error}. Also of interest is the \textbf{average probability of error}:
+	\begin{align}
+		P_e^{(n)} = \frac{1}{M}\sum_{i=1}^M \lambda_i
+	\end{align}
+What should it mean for a particular rate $R$ to be achievable by a channel? It should mean that we can \emph{always} send messages at that rate \emph{regardless} of the variety of the messages. A binary channel with a rate of $1$ bit per $1$ transmission should care if $M = 1000$ or $M=1000000$; it should be able to achieve it's rate independently of that. Thus our definition of achievability is going to have to involve a sequence of codes in which the probability of error is always small, or at the very least goes to $0$.
+\begin{definition}
+ A rate $R$ is said to be \textbf{achievable} if there exists a sequence of $(\lceil 2^{nR} \rceil,n)$ codes such that the maximal probability of error $\lambda^{(n)}$ tends to $0$ as $n \to \infty$. For simplicity we will tend to write $(2^{nR},n)$ in place of $(\lceil 2^{nR} \rceil,n)$. 
+\end{definition}
+So if the rate $R$ is, say, $3$, then the sequence of codes would be 
+\[ (8,1),(64,2),(512,3),\ldots \]
+i.e. one would have to demonstrate the rate being achieved sending a variety $8 = (2^3)^1$ signal using one transmission of the channel, a variety $64$ signal using $(2^3)^2$ signal using $2$ transmissions of the channel, and so on. Finally, we can define the following 
+\begin{definition}
+	The \textbf{capacity} of a channel is the supremum of all achievable rates. 
+\end{definition}
+We are almost ready to state and prove the noisy channel coding theorem, the fundamental theorem of information theory. We only need one more theoretical concept: an extension of the concept of typicality to a joint set of random variables. 
+\begin{definition}
+	Let $X_1,X_2,\ldots,X_n$ and $Y_1,Y_2,\ldots,Y_n$ be two collections of iid random variables. Recall the sample entropy of this random sample for, say $X$, is the statistic $h(\vec{x}) = -\frac{1}{n}\log(p(\vec{x})$. The set $A_{\epsilon}^{(n)}$ of \textbf{jointly typical sequences} $(x^n,y^n)$ with respect to the distribution $p(x,y)$ is the set
+	\begin{align}	
+		A_{\epsilon}^{(n)} = \{(x^n,y^n) \in \mathcal{X}^n \times \mathcal{Y}^n: |h(\vec{x})-H(X)| < \epsilon \wedge |h(\vec{y})-H(Y)| < \epsilon \wedge |h(\vec{y},\vec{z})-H(X,Y)| < \epsilon \}
+	\end{align}
+	Thus it is the set of sequences $(x^n,y^n)$ in which $x^n$ would be typical with respect to $p(x)$, $y^n$ would be typical with respect to $p(y)$, and the pair $(x^n,y^n)$ would be typical with respect to $p(x^n,y^n)$, where we are assuming based on the context of our discussion of channel capacity that
+	\[ p(x^n,y^n) = \prod_{i=1}^np(x_i,y_i) \]
+\end{definition}
+We now unfortunately need to restate and reprove the asymptotic equipartition property for this new extended definition:
+\begin{theorem}[Joint AEP]
+	Let $(X^n,Y^n)$ be sequences of length $n$ drawn iid according to $p(x^n,y^n) = \prod_{i=1}^np(x_i,y_i)$. (What we mean by drawing iid here is drawing $(X,Y)$ pairs one at a time $n$ times according to their joint probability distribution $p(x,y)$.) Then
+	\begin{itemize}
+		\item[(1)] $P((X^n,Y^n) \in A_{\epsilon}^{(n)}) \to 1$ as $n \to \infty$
+		\item[(2)] $|A_{\epsilon}^{(n)}| \leq 2^{n(H(X,Y)+\epsilon}$
+		\item[(3)] If $(\tilde{X}^n,\tilde{Y}^n)\sim p(x^n,y^n)$ (i.e. $\tilde{X}^n$ and $\tilde{Y}^n$ are independent with the same marginals as $p(x^n,y^n)$), then 
+		\[ P\left( (\tilde{X}^n,\tilde{Y}^n) \in A_{\epsilon}^{(n)} \right) \leq \frac{1}{2^{n(I(X;Y)-3\epsilon)}} \]
+		and for sufficiently large $n$ we also have
+		\[ P\left( (\tilde{X}^n,\tilde{Y}^n) \in A_{\epsilon}^{(n)}\right) \geq (1-\epsilon)\frac{1}{2^{n(I(X;Y)+3\epsilon}} \]
+	\end{itemize}
+\end{theorem}
+\begin{proof}
+	By the weak law of large numbers we have that the sample entropies converge in probability to their respective actual entropies. Thus we can pick an $n_1$ such that for all $n > n_1$, 
+	\[ P(|h(\vec{X})-H(X)| \geq \epsilon) < \frac{\epsilon}{3}\]
+an $n_2$ such that for all $n > n_2$,
+\[ P(|h(\vec{Y})-H(Y)|) \geq \epsilon) < \frac{\epsilon}{3} \]
+and an $n_3$ such that for all $n > n_3$,
+ \[  P(|h(\vec{X},\vec{Y})-H(X,Y)| \geq \epsilon) < \frac{\epsilon}{3}\]
+ Picking $N = \max\{n_1,n_2,n_3\}$, we see that for all $n > N$, the probability of being in at least one of these sets is less than $\epsilon$. However, these probabilities are precisely the probabilities of not being in the respective typical sets. Therefore the probability of being in all three of them at once has to be at least $1-\epsilon$, proving (1). Part (2) is identical to the arguments made in section $2$: Simply note that 
+ \begin{align}
+ 	1 &= \sum_{(\vec{x},\vec{y}) \in \mathcal{X}^n \times \mathcal{Y}^n} p(\vec{x},\vec{y}) \\
+ 	&\geq \sum_{(\vec{x},\vec{y}) \in A_{\epsilon}^{(n)}} p(\vec{x},\vec{y}) \\
+ 	&\geq |A_{\epsilon}^{(n)}|\frac{1}{2^{n(H(X,Y)+\epsilon)}}
+ \end{align}
+ Thus multiplying both sides we see $|A_{\epsilon}^{(n)}| \leq 2^{n(H(X,Y)+\epsilon)}$. For (3), if $\tilde{X}^n$ and $\tilde{Y}^n$ are independent but have the same marginals as $X^n$ and $Y^n$, then 
+ \begin{align}
+ 	P((\tilde{X}^n,\tilde{Y}^n) \in A_{\epsilon}^{(n)}) &= \sum_{(x^n,y^n) \in A_{\epsilon}^{(n)}} p(x^n)p(y^n)  \\
+ 	&\leq \left( 2^{n(H(X,Y)+\epsilon)}\right)\left( \frac{1}{2^{n(H(X)-\epsilon)}} \right) \left( \frac{1}{2^{n(H(Y)-\epsilon)}} \right) \\
+ 	&= \frac{1}{2^{n(I(X;Y)-3\epsilon)}}
+ \end{align}
+ Where the final equality follows from the identity that $I(X;Y) = H(X)+H(Y)-H(X,Y)$. For the second part of (3), we have already that $P(A_{\epsilon}^{(n)}) \geq 1-\epsilon$, and therefore 
+ \begin{align}
+ 	1-\epsilon &\leq \sum_{(x^n,y^n) \in A_{\epsilon}^{(n)}} p(x^n,y^n) \\
+ 			&\leq |A_{\epsilon}^{(n)}|\frac{1}{2^{n(H(X,Y)-\epsilon)}} 
+ \end{align}
+ by definition of $A_{\epsilon}^{(n)}$. Thus by multiplying both sides we have 
+ \[ |A_{\epsilon}^{(n)}| \geq (1-\epsilon)2^{n(H(X,Y)-\epsilon)} \]
+ But then it follows that for sufficiently large $n$, we have 
+ \begin{align}
+ 	P((\tilde{X}^n,\tilde{Y}^n) \in A_{\epsilon}^{(n)}) &= \sum_{(x^n,y^n) \in A_{\epsilon}^{(n)}}p(x^n)p(y^n) \\ &\geq \left((1-\epsilon)2^{n(H(X,Y)-\epsilon)}\right) \left( \frac{1}{2^{n(H(X)+\epsilon)}} \right)\left( \frac{1}{2^{n(H(X)+\epsilon)}} \right) \\
+ 	&= (1-\epsilon)\frac{1}{2^{n(I(X;Y)+3\epsilon)}}
+ \end{align}
+ completing the proof. 
+\end{proof}
+The really crucial thing is in the above theorem is fact (3), in conjunction with fact (1). What these two facts mean taken together is that if we are drawing pairs of sequences $(X^n,Y^n)$, then we can be nearly certain of drawing jointly typical pairs according to the channel, and nearly certain of \emph{not} drawing typical pairs if we are drawing the two sequences independently, and moreover this certainty increases with $n$. The exceptions to this rule concern the mutual information $I(X;Y)$ in relation to a channel. If the channel is extremely noisy, then $X$ and $Y$ will be nearly independent, and $I(X;Y)$ will be close to $0$. In this case the (3) and (1) are not at all contradictory since the bounds converge to $1$. On the other hand, if the channel is airtight, then $I(X;Y)$ will something decently sized and greater than $0$ and this theorem confirms that there is a gulf of difference between drawing the pair $(X,Y)$ according to the rules of the channel and drawing them independently. \par 
+From all of these results combined we have that there are about $2^{nH(X)}$ typical $X$ sequences, about $2^{nH(Y)}$ typical $Y$ sequences, and about $2^{nH(X,Y)}$ jointly typical sequences. But we know that $H(X,Y) \leq H(X) + H(Y)$. The number of typical $X$ and typical $Y$ pairs is therefore bigger than the number of jointly typical sequences; not all pairs of typical $X^n$ and typical $y^n$ sequences are jointly typical. We also have that the probability of a randomly chosen pair being jointly typical is about $\frac{1}{2^{n(I(X;Y)}}$. Consider the experiment of drawing pairs of sequences $(x^n,y^n)$ uniformly at random until finding a jointly typical pair. Then the number of non-jointly typical pairs drawn before finding one would be a geometric random variable with $p = \frac{1}{2}^{nI(X;Y)}$, and with expected value $2^{nI(X;Y)}-1$, i.e. we would expect to draw about $2^{nI(X;Y)}$ pairs before finding a jointly typical one. \par 
+We are now finally ready to state and prove the fundamental theorem of information theory.
+\begin{theorem}[Channel coding theorem]
+	For a discrete memoryless channel, all rates below capacity $C$ are achievable. Specifically, for any rate $R < C$, there exists a sequence of $(2^{nR},n)$ codes with maximum probability of error $\lambda^{(n)} \to 0$. Conversely, any sequence of $(2^{nR},n)$ codes with $\lambda^{(n)} \to 0$ must have $R \leq C$.  
+\end{theorem}
+\begin{proof}
+	Let $(\mathcal{X},p(y|x),\mathcal{Y})$ be a channel with capacity $C$. Fix any probability distribution for $p(x)$ (later we will fix $p$ to be the distribution which maximizes $I(X;Y)$, i.e. achieves channel capacity). Fix an $R$, and an $n$. We generate our codewords by simply drawing strings in $\mathcal{X}^*$ at random according to the distribution $p(x)$. Thus the probability of some string being the $i^{th}$ codeword is 
+	\[ p(x) = \prod_{i=1}^n p(x_i) \]
+The $i{th}$ string we draw is the $i{th}$ codeword, and we need $2^{nR}$ many. We can index the codewords vertically from left to right in order to construct a matrix of symbols in $\mathcal{X}$:
+\begin{align}
+	\mathcal{C} = \begin{pmatrix} x_1(1) & x_2(1) & \ldots & x_n(1) 
+	\\	x_1(2) & x_2(2) & \ldots & x_n(2) \\
+	\vdots \\ x_1(2^{nR}) & x_2(2^{nR}) & \ldots & x_n(2^{nR}) \end{pmatrix}
+\end{align}
+Since the codes are generated independently according to $p(x)$, the probability that we get a particular code matrix $\mathcal{C}$ is 
+\begin{align}
+	P(\mathcal{C}) = \prod_{j=1}^{2^{nR}}\prod_{i=1}^np(x_i(j))
+\end{align}
+Now we consider two people trying to communicate over this channel and using this codebook. From the perspective of the receiver, the message $W$ chosen might as well be chosen uniformly at random from the collection of $M=2^{nR}$ many possible ones. (Since the message $W$ is being seen as a random variable we use lower case $w$ as the fixed outcome of this.) Both the sender and the receiver have a copy of the codebook and understand the conditional probability transition matrix $p(y|x)$ for the channel. Thus if the sequence received is $y^n$, and we are assuming a memoryless channel with no feedback (which we are) then the receiver knows the conditional probability of this given any particular code $x^n(w)$ is 
+\begin{align}
+	p(y^n|x^n(w)) = \prod_{i=1}^n p(y_i|x_i(w))
+\end{align}
+Using knowledge of these probabilities the receiver makes a guess at which message was actually sent. Their strategy for making this choice is \textbf{jointly typical decoding}: they search through the codebook looking for a \emph{unique} index $\hat{W}(y^n)$ such that $(X^n(\hat{W}),Y^n)$ is jointly typical. If the receiver can't find any such index, or finds more than one of them, then they declare that there was an error in the communication. Even if the receiver does find a unique index, there could still be an error in the decoding, since this is all probabilistic. In this case they output the dummy sequence $0$. Let $\mathcal{E}$ be the event that there is a decoding error, i.e. $\mathcal{E} = \{\hat{W}(Y^n) \neq W\}$. 
+\begin{align}
+	P(\mathcal{E}) = P(\hat{W}(Y^n) \neq W) &= \sum_{\mathcal{C}}P(\mathcal{C})P(\hat{W}(Y^n)\neq W|\mathcal{C}) \\
+		&= \sum_{\mathcal{C}}P(\mathcal{C})\left(P(\bigvee_{w=1}^{2^{nR}} \hat{W}(Y^n)\neq W \wedge W=w |\mathcal{C} \right) \\
+		&= \sum_{\mathcal{C}}P(\mathcal{C})\sum_{w=1}^{2^{nR}}P(W=w)P(\hat{W}(Y^n)\neq W|W=i \wedge \mathcal{C}) \\
+		&= \sum_{\mathcal{C}}P(\mathcal{C})\sum_{w=1}^{2^{nR}}\frac{1}{2^{nR}}\lambda_w(\mathcal{C}) = \sum_{\mathcal{C}}P(\mathcal{C})P_e^{(n)}(\mathcal{C})
+\end{align}
+where $\lambda_w(\mathcal{C})$ and $P_e^{(n)}(\mathcal{C})$ denote the conditional probability of error and average probability of error given the code $\mathcal{C}$. Rearranging a bit we have
+\begin{align}
+	P(\mathcal{E}) = \sum_{\mathcal{C}}P(\mathcal{C})\sum_{w=1}^{2^{nR}}\frac{1}{2^{nR}}\lambda_w(\mathcal{C}) = \frac{1}{2^{nR}}\sum_{w=1}^{2^{nR}}\left[ \sum_{\mathcal{C}}P(\mathcal{C})\lambda_w(\mathcal{C}) \right]
+\end{align}
+Note that because the term in the brackets. Because the symmetric nature of the code construction (what is meant by this???) the probability of error doesn't actually depend on the particular index which was sent. Thus this term in the brackets is the same for all $w$. Without loss of generality we set $w=1$, so that this becomes 
+\begin{align}
+	P(\mathcal{E}) = \frac{1}{2^{nR}}\sum_{w=1}^{2^{nR}}\sum_{\mathcal{C}}P(\mathcal{C})\lambda_1(\mathcal{C}) = \sum_{\mathcal{C}}P(\mathcal{C})\frac{1}{2^{nR}}2^{nR}\lambda_1(\mathcal{C}) &= \sum_{\mathcal{C}}P(\mathcal{C})\lambda_1(\mathcal{C}) \\
+	&= P(\mathcal{E}|W=1)
+\end{align}
+Now for each $i=1,\ldots,2^{nR}$, let $E_i$ be the event that the pair $(X^n(i),Y^n)$ is jointly typical. Suppose that the noise of the channel produces a $Y^n$ such that a unique jointly typical sequence wouldn't be $X^n(1)$. Then the decoding scheme will produce an error, and this is precisely the event $E_1^c$ ($c$ denoting the complement). Note that this event also includes the cases in which the receiver finds multiple jointly typical sequences or none, since in that case they decode a string which isn't jointly typical with anything. Errors can also be produced when there is a unique jointly typical $X^n(i)$ which isn't correct. Thus for instance $E_2 \subseteq \mathcal{E}$, as well as $E_3,E_4,\ldots,E_{2^{nR}}$. All in all, $E_1^c$ along with $E_2,\ldots,E_{2^{nR}}$ constitute a cover of $\mathcal{E}$ and also are contained within it. Therefore
+\begin{align}
+	(\mathcal{E}|W=1) = E_1^c \cup E_2 \cup \ldots \cup E_{2^{nR}}
+\end{align}
+Thus we have
+\begin{align}
+	P(\mathcal{E}) &= P(\mathcal{E}|W=1) = P(E_1^c \cup E_2 \cup \ldots \cup E_{2^{nR}}|W=1) \\
+		&\leq P(E_1^c|W=1) + \sum_{i=2}^{2^{nR}}P(E_i|W=1)
+\end{align}
+We are now set up to use the joint AEP theorem. Firstly, we know by it that $P(E^c_1|W=1) \to 0$. Thus for $n$ sufficiently large we can assume that $P(E^c_1|W=1) \leq \epsilon$. Next, by definition of $\mathcal{C}$ we know that $X^n(1)$ and $X^n(i)$ are independent for $i \neq 1$. Thus $Y^n(X^n(1))$ and $X^n(i)$ are also independent. Nonetheless, they have the same marginals as $p(x^n,y^n)$. Therefore by the joint AEP again, we have that $P(E_i|W=1) \leq 2^{-n(I(X;Y-3\epsilon)}$. Thus
+\begin{align}
+	P(\mathcal{E}) &\leq P(E_1^c|W=1) + \sum_{i=2}^{2^{nR}}P(E_i|W=1) \\
+				&\leq \epsilon + \sum_{i=2}^{2^{nR}}2^{-n(I(X;Y)-3\epsilon)} \\
+				&= \epsilon +(2^{nR}-1)2^{-n(I(X;Y)-3\epsilon)} \\
+				&\leq \epsilon + 2^{nR}2^{-nI(X;Y)-3n\epsilon} \\
+				&= \epsilon + 2^{-n(I(X;Y)-R-3\epsilon)}
+\end{align}
+Now we know by hypothesis that $R < I(X;Y)$. This means that $I(X;Y)-R-3\epsilon > -3\epsilon$, so that $-n(I(X;Y)-R-3\epsilon)<-3n\epsilon$, so that $2^{-n(I(X;Y)-R-3\epsilon)} < 2^{-3n\epsilon} = (2^{3\epsilon})^{-n}$. Choosing $n$ large enough to make this number less than or equal to $\epsilon$ means that 
+\begin{align}
+	P(\mathcal{E}) &< \epsilon + 2^{3n\epsilon}2^{-n(I(X;Y)-R)} \\
+				&<\epsilon + 2^{-3n\epsilon} \\
+				&\leq 2\epsilon
+\end{align}
+which can be made arbitrarily small by choice of $\epsilon$. By choosing $p(x)$ to be the distribution which maximizes $I(X;Y)$ we see that we can choose any $R$ below the channel capacity and have this method work. We still aren't done yet, however. This probability is conditional on the codebook being chosen. We are supposed to be fixing one. Moreover $\mathcal{E}$ is really the average probability of error conditioned on the codebook $\mathcal{C}$ when our definition of achievability requires that the \emph{maximal} probability of error goes to $0$. In fact, recall what $P(\mathcal{E})$ really is:
+\[P(\mathcal{E}) = \sum_{\mathcal{C}}P(\mathcal{C})P_{\epsilon}^{(n)}(\mathcal{C}) = E_{\mathcal{C}}( P_{\epsilon}^{(n)} ) \leq 2\epsilon \]
+for sufficiently large $n$. Such an expectation cannot possibly be achieved unless there is a specific codebook $\mathcal{C}^*$ such that the average probability of error is actually below $2\epsilon$ for sufficiently large $n$. Pick that one, specifically. We need to now ensure that the \emph{maximal} probability of error is getting arbitrarily small. \par 
+ The trick is to simply throw out half of the codewords $\mathcal{C}^*$; specifically the half with the highest probability of error. Suppose that more than half of the codewords have probability of error greater than $4\epsilon$. Then even if all other codewords have probability of error equal to $0$,
+ \[ P_{\epsilon}^{(n)} > \frac{1}{2^{nR}}(2^{nR-1}4\epsilon) > 2\epsilon \overset{n}{\to} 0 \]
+ a contradiction. We therefore have to have that at most half of the codewords have to have a probability of error less than $4\epsilon$. Throwing the worst half of the codewords out therefore leaves us with a set of codewords such that the maximal probability of error is still \emph{less} than $4\epsilon$. What are we left with? Before throwing out half the codewords for each $n$, we had a sequence of codes 
+ \[ (2^R,1),(2^{2R},2),(2^{3R},3),\ldots \]
+ Now we have a sequence of codes
+ \[ 2^{R-1},1),(2^{2R}-1,2),(2^{3R}-1,3),\ldots \]
+ i.e.
+ \[ 2^{(R-1)},1),(2^{2(R-\frac{1}{2}}),2),(2^{3(R-\frac{1}{3})},3),\ldots \]
+ i.e. we have constructed a sequence of codes of rates $R' = R-\frac{1}{n}$. However, the distinction becomes negligible over time by definition of achievability, since achieving a rate $R$ involves taking the ceiling of $2^{nR}$. Thus the sequence of codes also works to achieve the rate $R$. Thus we have proven the first half of the theorem - that all rates $R < C$ are achievable. \par 
+ It remains to show that all achievable rates are $\leq C$. Three ingredients are required for this. First, we need to recall Fano's inequality. We have the Markov chain $W \to X^n(W) \to Y^n \to \hat{W}$, where $\hat{W}$ is an estimator of the original $W$. Assume that the message chosen $W$ is uniformly distributed (as we have been). Fano's inequality tells us that
+ \begin{align}
+	H(W|\hat{W}) \leq 1+P_e^{(n)}\log(2^{nR}) = 1+P_e^{(n)}nR
+ \end{align}
+ where the probability of error in the context of the statement of Fano's inequality is exactly the average probability of error we've been dealing with $P_e^{(n)}$ because
+ \[ P_e = P(W \neq \hat{W}) = \sum_i P(\hat{W} \neq W|W=i)P(W=i) = \frac{1}{2^{nR}}\sum_i \lambda_i = P_e^{(n)} \]
+ The next ingredient is a small lemma. We claim that if $Y^n$ is the result of passing $X^n$ through a discrete memoryless channel of capacity $C$ (one letter at a time), then $I(X^n;Y^n) \leq nC$ for all probability distributions $p(x^n)$. To see this note
+ \begin{align}
+ 	I(X^n;Y^n) &= H(Y^n)-H(Y^n|X^n) \\ &= H(Y^n)-\sum_{i=1}^n H(Y_i|Y_{i-1},\ldots,Y_1,X^n) \\ &= H(Y^n) - \sum_{i=1}^n H(Y_i|X_i) \\
+ 	&\leq \sum_{i=1}^n H(Y_i)-\sum_{i=1}^n H(Y_i|X_i) \\
+ 	&= \sum_{i=1}^n I(X_i;Y_i) \leq nC
+ \end{align}
+ where the second line applies the chain rule for entropy, the third uses the memoryless property of the channel, and the fourth line uses the fact that joint entropy is smaller than the sum of the individual entropies. \par 
+ Lastly, we need to be a bit fancy with the data processing inequality. It is clear that $W \to X^n \to Y^n \to \hat{W}$ is a Markov chain. Applying the data processing inequality directly gives us $I(W;\hat{W})\leq I(W;Y^n)$ But we need a bit more than this. Note that we showed earlier that $\hat{W} \to Y^n \to X^n \to W$ is also a Markov chain. Using this as well as the fact that $I(A;B) = I(B;A)$ gives us that \[ I(W;Y^n) = I(Y^n;W) \leq I(Y^n,X^n = I(X^n,Y^n) \]
+ Thus we have that $I(W;\hat{W}) \leq I(X^n;Y^n)$. This is the final ingredient. With our ingredients prepared, observe the following:
+ \begin{align}
+ 	nR = \log(2^{nR}) &= H(W) \\
+ 			&= H(W|\hat{W})+I(W;\hat{W}) \\
+ 			&\leq 1+P_e^{(n)}nR+I(W;\hat{W}) \\
+ 			&\leq 1+P_e^{(n)}nR + I(X^n;Y^n) \\
+ 			&\leq 1+P_e^{(n)}nR + nC
+ \end{align}
+ where the first line is using our assumption of the uniform distribution, the second line uses the identity $I(A;B) = H(A)-H(A|B) \implies H(A) = H(A|B)+I(A;B)$, the third line applies our first ingredient (Fano's inequality), the fourth line uses our third ingredient (the data processing inequality), and the final line using our second ingredient (our little lemma). Dividing both sides by $n$ gives 
+ \begin{align}
+ 	R \leq P_e^{(n)}R + \frac{1}{n} + C \overset{n}{\to} C
+ \end{align}
+ since the probability of error goes to $0$ by definition of achieving a rate of transmission. This completes the proof.
+\end{proof}
+This converse to the channel coding theorem is sometimes referred to as the \textbf{weak} converse. The strong converse is an addendum. It adds that for all rates above capacity, the probability of error goes to $1$ exponentially fast. Hence, channel capacity is a very clear dividing point. Rates of error go to $0$ exponentially fast when we are below capacity, and go to $1$ exponentially fast when we are above it. 
+
