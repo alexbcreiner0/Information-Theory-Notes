@@ -1,0 +1,22 @@
+# LaTeX intermediate and log files
+*.aux
+*.log
+*.toc
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.run.xml
+
+# BibTeX auxiliary files
+*.bbl
+*.blg
+
+# Intermediate DVI and PS files
+*.dvi
+*.ps
+
+# Editor backup and swap files
+*.swp
+*.bak
+*~
