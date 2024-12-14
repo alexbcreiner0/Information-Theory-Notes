@@ -1,6 +1,7 @@
 \section{Data Compression}
+\subsection{Instantaneous Codes and the Kraft Inequality}
 \begin{definition}
-	A \textbf{source code} $C$ for a random variale $X$ is a mapping from $\mathcal{X}$, the range of $X$, to $\mathcal{D}^*$, the set of finite-length strings of symbols from a $D$-ary alphabet. Let $C(x)$ denote the codeword corresponding to $x$ and let $l(x)$ denote the length of $C(x)$. 
+    A \textbf{source code} $C$ for a random variale $X$ is a mapping from $\mathcal{X}$, the range of $X$, to $\mathcal{D}^*$ (where $\mathcal{D}^*$ is indeed the Kleene star of $\mathcal{D}$, i.e. the set of finite-length strings of symbols of $\mathcal{D}$, which is an arbitrary $D$-ary alphabet). Let $C(x)$ denote the codeword corresponding to $x$ and let $l(x)$ denote the length of $C(x)$. 
 \end{definition}
 \begin{definition}
 	The expected length $L(C)$ of a source code $C(x)$ for a random variable $x$ with pmf $p(x)$ is given by 
@@ -10,7 +11,7 @@
 where $l$ is the length of the codeword associated with $x$. WLOG we will assume the D-ary alphabet is $D = \{0,1,\ldots,D-1\}$. 
 \end{definition}
 \begin{definition}
-	A code is said to be \textbf{non-singular} if every element of the range of $\mathcal{X}$ maps to different strings in $\mathcal{D}*$ (so just 1-1?)
+	A code is said to be \textbf{non-singular} if every element of the range of $\mathcal{X}$ maps to different strings in $\mathcal{D}*$ (i.e. this is just another word for being 1-1).
 \end{definition}
 This is obviously the place to start when thinking about coding and decoding, since it is the minimal condition for the ability to recover a symbol from a code. However, usually we are interested in coding sequences of symbols. One option is to distinguish between by adding a special symbol (usually a comma) which is only found in between codewords. But this is not very efficient. We can do better by introducing the idea of self-punctuating or instantaneous codes. 
 \begin{definition}
@@ -18,13 +19,15 @@ This is obviously the place to start when thinking about coding and decoding, si
 	\begin{align}
 		C(x_1x_2\ldots x_n) = C(x_1)C(x_2)\ldots C(x_n)
 	\end{align}
-A code is called \textbf{uniquely decodable} if it's extension is non-singular (again, why do we have this word non-singular it's just the dumb linear algebra stuff again). 
+A code is called \textbf{uniquely decodable} if it's extension is non-singular.
 \end{definition}
 As a minimal condition for unique codings of strings over an alphabet, this leaves us still short of any kind of qualifications for a \emph{good} coding. The main issue still is that one may have to read over the entire coded string just to determine the first symbol of the original string. We therefore refine things with the following definition:
 \begin{definition}
 	A code is called a \textbf{prefix code} or an \textbf{instantaneous code} if no codeword is a prefix of any other codeword. 
 \end{definition}
 If no codeword is a prefix of any other codeword then an interpreter can move from left to right across the string, and whenever it finds a full codeword it can be sure that it has found a full symbol of the original string. It can therefore fully determine the original message with one single scan. An instantaneous code is therefore self-punctuating; there is no need for a special comma symbol.
+
+Note the hierarchy of conditions for our source code language: any instantaneous source code must be uniquely decodable. This is because every string is a prefix of itself, meaning that the condition bars us of the possibility of two outcomes mapping to the same code. Clearly however, the converse need not be true. Meanwhile, every uniquely decodable source code must be non-singular, since non-singularity is just the special case of unique decodability on the single character length strings. Clearly again, however, the converse needs not be true. Thus to be an instantaneous source code is a strengthening of being uniquely decodable, which is itself a strengthening of being non-singular. 
 \begin{theorem}[Kraft Inequality]
 	For any prefix code over an alphabet of size $D$, the codeword lengths $l_1,l_2,\ldots,l_m$ must satisfy 
 	\begin{align}
@@ -32,5 +35,117 @@ If no codeword is a prefix of any other codeword then an interpreter can move fr
 	\end{align}
 Conversely, given a set of codeword lengths that satisfy this inequality, there always exists a prefix code with these word lengths. 
 \end{theorem}
+\begin{proof}
+    For a $D$-ary alphabet, imagine a $D$-ary tree in which each node has $D$ many children. Each branch corresponds with adding one of the $D$ symbols to our string. Paths from the root to a leaf specify code word. What would being prefix-free correspond to on this tree? It would mean that no path corresponding to any particular code word leaves us at an \emph{ancestor} of any other code word. Equivalently, it means that descendents of codewords are not allowed to be codewords. 
+
+    Let $l_{max}$ be the length of the longest codeword, and consider all nodes of the tree at level $l_{max}$. A codeword at level $l_i$ has $D^{l_{max}-l_i}$ many descendents at level $l_{max}$, and each of these sets of descendents must be disjoint by our condition of our mapping being prefix-free. The key observation is that even after summing all of the descendents of all codewords at this max level of the tree, we still cannot have more code words than there are leaves at this level. I.e.
+
+    \begin{equation}
+        \sum_{x_i \in Range(\mathcal{X})} D^{l_{max}-l_i} \leq D^{l_{max}}
+    \end{equation}
+
+    Dividing both sides of this inequality by $D^{l_{max}}$ leaves us with the Kraft inequality. 
+
+    Conversely, suppose we are given a set of codeword lengths $l_1,l_2,\ldots,l_m$ and a $D$ satisfying the Kraft inequality. Then we can initiate a process of \emph{constructing} the tree which we just described. Working lexicographically through the alphabet of $\mathcal{D}$, draw all children of a node, then move on in that same order drawing further children. When we first reach level $l_i$ for some length, make the word corresponding to that word the first codeword for that length, and then restrict the construction so that no further extensions of the graph are allowed from that node. Defining the codewords in this way clearly generates a prefix free source code as desired.
+\end{proof}
 Note that this sum gets larger the smaller the code lengths. Thus the optimal coding would be something which satisfies this equality perfectly. 
 
+\begin{theorem}[Extended Kraft Inequality]
+    For any countably infinite set of codewords that form a prefix code, the codeword lengths satisfy the extended Kraft inequality:
+
+    \begin{align}
+        \sum_{i=1}^{\infty} D^{-l_i} \leq 1
+    \end{align}
+    Conversely, given any sequence of code lengths $l_1,l_2,\ldots$ satisfying the Kraft inequality, we can construct a prefix code with these codeword lengths. 
+
+    \begin{proof}
+        Let the $D$-ary alphabet be $\{0,1,\ldots,D-1\}$. Consider the $i^{th}$ codeword $y_1y_2\ldots y_{l_i}$. Let $y = 0.y_1y_2\ldots y_{l_i}$ be the real number given by the $D$-ary expansion:
+        \begin{equation}
+            0.y_1y_2\ldots y_{l_i} = \sum_{j=1}^{l_i} y_jD^{-j}
+        \end{equation}
+        The idea is to think about $[0,1) \subseteq \mathbb{R}$ as being represented as the set of all leaf nodes in an infinitely expanding $D$-ary tree via the standard bijection. Fix another codeword $x = x_1x_2\ldots x_{l_j}$ and consider the interval
+        \begin{equation}
+            \left[0.y_1y_2\ldots y_{l_i}, 0.y_1y_2\ldots y_{l_i} + \frac{1}{D^{l_i}} \right) = I_y
+        \end{equation}
+        We claim that for $x \in I_y$, it must be the case that $y_1y_2 \ldots y_{l_i}$ is a prefix of $x_1x_2\ldots x_{l_j}$. To see this, suppose it is indeed in the interval. Now clearly we have that $x \geq y$. If $x = y$, then trivially $y$ is a prefix of $x$, so done. Thus it must be that the digits of $x$ and $y$ are equal for a bit (possibly not at all) and then eventually there comes a digit $k \leq l_j$ such that $x_k > y_k$. If $l_j \leq l_i$, then it is possible for this to occur in such a way that the following digits of $y$ cover some of the difference. Need to consider the minimum difference in size between $x$ and $y$ in this situation. This occurs when $x_1 = y_1, x_2 = y_2, \ldots, x_k = y_k+1$ ($y_k \leq D-2$), and then for all $l_j < w \leq l_i$, $x_w = 0$, and $y_w = D-1$. (E.g. in decimal, something along the lines of $x = 0.56256700$ and $y = 0.5624699$.) In this case the difference between $y$ and $x$ is exactly $0.00\ldots01$ base $D$, or $\frac{1}{D^{l_i}}$. However, this is just outside of the interval we have specified, so is \emph{imposssible}. Thus in order for $x > y$, it must be that $l_j > l_i$, and have the difference come after all digits of $y$. I.e. that $x_1 = y_1$, $x_2 = y_2,\ldots,x_{l_i} = y_{l_i}$, and then $x_w > 0$ for at least a single $l_i < w \leq l_j$ and $y_w = 0$ for all $l_i < w \leq l_j$ (if this weren't the case then $y$ would not be $y$!). But here we see that $y$ is a prefix of $x$. 
+
+        We can conclude therefore that the only way for a number associated with a codeword to be in this interval is for $y_1y_2\ldots y_{l_i}$ to be a prefix of it. If our source code is prefix-free, then this does not happen; hence, all such intervals are disjoint. It follows that the total measure of these intervals is the sum of the individual measures, and since all of our intervals are subsets of the unit interval $[0,1]$, it must follow that the sum of the intervals is also less than $1$. Except the measure of each interval is precisely $1$ over $D$ to the power of the code word lengths! E.g. we have obtained the Kraft inequality
+        \begin{equation}
+            \sum_{i = 1}^{\infty} \frac{1}{D^{l_i}} \leq 1
+        \end{equation}
+        For the converse, we proceed identically to how we did for the normal Kraft inequality. We are given a countably infinite sequence of codeword lengths $\{l_i\}_{i \in \omega}$. Reorder them so that the lengths occur in non-decreasing order. Then we assign to each length a disjoint interval, starting from the left side of the unit interval, and then from that take the codeword to be the $D$-ary encoding of the left end of this interval. For example, if $l_1 = 2$ and $\mathcal{D} = \{0,1\}$, we would assign to $l_1$ the interval $[0,\frac{1}{2^2}) = [0,\frac{1}{4})$ (or $[.00,.01)$ in binary), and our first code would be $00$. If $l_2 = 5$, we would have the interval $[\frac{1}{4},\frac{1}{4}+\frac{1}{2^5}) = [\frac{1}{4},\frac{9}{32})$ (or $[.01000,,01001)$ in binary), corresponding to the code word $01000$. If $l_3 = 5$ again, next interval would be $[.01001,.01010)$, and codeword would be $01001$. Clearly, by the argument we already gave, this is going to be prefix-free!
+    \end{proof}
+\end{theorem}
+\subsection{Optimal Codes}
+Here we consider the problem of finding codeword lengths of minimal expected length $L(C)$. The Kraft inequality gives us an algorithmic way to construct prefix-free codes provided we find a set of codeword lengths satisfying it. Thus we have an optimization problem on our hands: For a sample space of $m$ many outcomes, find codewords $l_1,l_2,\ldots,l_m$ which minimize
+\begin{equation}
+    L = \sum_{i=1}^m p_i l_i 
+\end{equation}
+Subject to the constraint
+\begin{equation}
+    \sum_{i=1}^m D^{-l_i} \leq 1
+\end{equation}
+Using the method of Lagrange multipliers, we want to minimize:
+\begin{equation}
+    J = \sum_{i=1}^m p_il_i + \lambda\left(\sum_{i=1}^m D^{-l_i}\right)
+\end{equation}
+Differentiating with respect to an arbitrary $l_i$ gives 
+\begin{equation}
+    \frac{\partial J}{\partial l_i} = p_i - \lambda D^{-l_i}\ln(D)
+\end{equation}
+Setting this equal to $0$ and solving for $D^{-l_i}$ gives
+\begin{equation}
+    D^{-l_i} = \frac{p_i}{\lambda \ln(D)}
+\end{equation}
+Substituting this back into our constraint equation then gives
+\begin{align}
+    &\sum_{i=1}^m \frac{p_i}{\lambda \ln(D)} \leq 1 \\
+    &\Rightarrow \frac{1}{\ln(D)}\cancelto{1}{\sum_{i=1}^m p_i} \leq \lambda \\
+    &\Rightarrow \frac{1}{\ln(D)} \leq \lambda
+\end{align}
+As we mentioned already, the closer to $1$ we get with this constraint, the shorter the codewords must be. Going ahead and setting $\lambda$ equal to the left hand side here and plugging it back into our gradient vector equations gives
+\begin{align}
+    D^{-l_i} = \frac{p_i}{\frac{1}{\ln(D)}\ln(D)} \Rightarrow D^{-l_i} = p_i \\
+    &\Rightarrow l_i = -\log_D(p_i)
+\end{align}
+This is extremely conspicuous, for several reasons. First, it makes a lot of sense. The lower $p_i$, the less likely the codeword is going to be needed, and the longer we should make the code word. Conversely, it means that higher probability events get shorter code words. Second, it makes the expected code word length equal to the entropy of the random variable $X$!
+\begin{equation}
+    L(C) = \sum_{i=1}^m p_il_i = \sum_{i=1}^m -p_i\log_D(p_i) = H_D(X)
+\end{equation}
+We've demonstrated through some hocus pocus that there at the very least is a set of code word lengths which satisfy the Kraft inequality (putting aside for the moment the issue that $-\log_D(p_i)$ is not necessarily an integer) and make the expected code word length equal to the $D$-ary entropy of the underlying random variable $X$. The following theorem confirms that the instantaneous codes constructed according to the proofs in the previous section are optimal. 
+\begin{theorem}
+    The expected length $L$ of any instantaneous $D$-ary code for a random variable $X$ is greater than or equal to the entropy $H_D(X)$. That is,
+    \begin{equation}
+        L \geq H_D(X)
+    \end{equation}
+    Furthermore, equality is achieved iff $l_i = -\log_D(p_i)$ for each $i \leq m$. 
+\end{theorem}
+\begin{proof}
+    Consider a source code $C: X \to \mathcal{D}$, and let $L$ be the expected length of a coded outcome. 
+    \begin{align}
+        L - H_D(X) &= \sum_{i=1}^m p_il_i - \sum_{i=1}^m p_i\log_D(\frac{1}{p_i}) \\
+                   &= -\sum_{i=1}^m
+    \end{align}
+    Now we pull a rabbit out of our hats. Let $r_i = \frac{D^{-l_i}}{\sum_j D^{-l_j}}$, and $c = \sum_i D^{-l_i}$. Note that
+    \begin{align}
+        \sum_{i=1}^m p_i\log_D(\frac{p_i}{r_i}) - \log_D(c) &= \sum_i p_i(\log_D(p_i) - \log_D(r_i)) - \log_D(\sum_i D^{-l_i}) \\
+        &= \sum_i p_i\log_D(p_i) - \sum_i p_i\log_D(\frac{D^{-l_i}}{\sum_j D^{-l_j}}) - \log_D(\sum_i D^{-l_i}) \\
+        &= \sum_i p_i \log_D(p_i) - \left( \sum_i p_i[\log_D(D^{-l_i}) - \log_D(\sum_j D^{-l_j})] \right) - \log_D(\sum_i D^{-l_i}) \\
+        &= \sum_i p_i \log_D(p_i) - \sum_i p_i \log_D(D^{-l_i}) + \cancelto{1}{\sum_i p_i}(\cancel{\log_D(\sum_j D^{-l_j})}) - \cancel{\log_D(\sum_i D^{-l_i})} \\
+        &= L - H_D(X)
+    \end{align}
+    Noting that the $r_i$ define a probability distribution over $X$, we now have that
+    \begin{align}
+        L-H_D(X) &= \sum_i p_i \log_D(\frac{p_i}{r_i}) - \log_D(c) \\
+                 &= D(p || r) + \log_D(1) - \log_D(c) \\
+                 &= D(p || r) + \log_D(\frac{1}{c}) \\
+                 \geq 0 + \log_D(\frac{1}{c})
+    \end{align}
+    where $D(p || r) \geq 0$ follows from our results about relative entropy. Now, by our assumption that $C$ is prefix-free and the Kraft inequality, we know that $c = \sum_i D^{-l_i} \leq 1$. Therefore $\frac{1}{c} \geq 1$, so that $\log_D(\frac{1}{c}) \geq 0$. Thus we have that $L-H_D(X) \geq 0$, i.e. $L \geq H_D(X)$. 
+
+    Since both $D(p || r)$ and $\log_D(\frac{1}{c})$ are non-negative quantities, it follows that $L-H_D(X)$ will equal $0$ only if both terms are $0$. By properties of relative entropy, we know that $D(p || r) =0$ iff $p_i = r_i$ for all $i$, i.e. if $p_i = \frac{D^{-l_i}}{\sum_j D^{-l_j}}$. Now, note that if we set $l_i = -\log_D(p_i)$ for each $i$, then $p_i = D^{-l_i}$ for all $i$, with 
+    \begin{align}
+        \sum_j D^{-l_j} = \sum_j D^{\log_D(p_j)} = \sum_j p_j = 1
+    \end{align}
+    This would force $p_i = r_i$ for all $i$ as well as force $\log_D(\frac{1}{c}) = \log_D(1) = 0$, as desired. 
+\end{proof}
